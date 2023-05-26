@@ -8,18 +8,18 @@ export type responseListManga = {
 };
 
 type genre = {
-  slug: string;
-  url: string;
+  url?: string;
   name: string;
+  slug?: string;
 };
 
 type chapter = {
   slug: string;
   url: string;
-  title: string;
   parent_href: string;
-  last_update: string;
-  views: string;
+  title?: string;
+  last_update?: string;
+  views?: string;
 };
 
 export type responseDetailManga = {
@@ -46,7 +46,10 @@ export type image_chapter = {
 export type responseChapter = {
   url: string;
   slug: string;
+  title: string;
   chapter_data: image_chapter[];
+  prev_chapter: chapter | null;
+  next_chapter: chapter | null;
 };
 
 export interface AbstractMangaFactory {
@@ -60,6 +63,8 @@ export interface AbstractMangaFactory {
   getDataChapter(
     url_chapter: string,
     url: string,
-    slug: string
+    slug: string,
+    prev_chapter?: chapter,
+    next_chapter?: chapter
   ): Promise<responseChapter>;
 }

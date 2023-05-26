@@ -13,6 +13,7 @@ import { not_null } from "../utils/validate";
 
 export class Nettruyen implements AbstractMangaFactory {
   baseUrl: string;
+  all_genres: genre[];
   browser: Promise<Browser>;
 
   constructor(baseUrl: string) {
@@ -20,17 +21,26 @@ export class Nettruyen implements AbstractMangaFactory {
     this.browser = puppeteer.launch({
       headless: "new",
     });
+    this.all_genres = [] as genre[];
   }
 
   async getDataChapter(
     url_chapter: string,
     url: string,
-    slug: string
+    slug: string,
+    prev_chapter?: chapter,
+    next_chapter?: chapter
   ): Promise<responseChapter> {
     const _page = await (await this.browser).newPage();
     await _page.goto(url_chapter);
     const content = await _page.$(
       "#ctl00_divCenter > div > div.reading-detail.box_doc"
+    );
+    const title = not_null(
+      await _page.$eval(
+        "#ctl00_divCenter > div > div:nth-child(1) > div.top > h1",
+        (el) => el.textContent
+      )
     );
     const images: image_chapter[] = await Promise.all(
       (
@@ -51,10 +61,52 @@ export class Nettruyen implements AbstractMangaFactory {
         };
       })
     );
+    const prev: chapter = {} as chapter;
+    if (prev_chapter === undefined) {
+      const prev_chapter_get = await _page.$eval(
+        "#chapterNav > a.prev.a_prev",
+        (el) => {
+          return {
+            url_chapter: el.getAttribute("href"),
+          };
+        }
+      );
+      prev.url = not_null(prev_chapter_get.url_chapter);
+      prev.parent_href = url;
+      prev.slug = url.substring(`${this.baseUrl}/truyen-tranh/`.length);
+    }
+    const next: chapter = {} as chapter;
+    if (next_chapter === undefined) {
+      const next_chapter_get = await _page.$eval(
+        "#chapterNav > a.next.a_next",
+        (el) => {
+          return {
+            url_chapter: el.getAttribute("href"),
+          };
+        }
+      );
+      next.url = not_null(next_chapter_get.url_chapter);
+      next.parent_href = url;
+      next.slug = url.substring(`${this.baseUrl}/truyen-tranh/`.length);
+    }
+
     return {
       url,
       slug,
       chapter_data: images,
+      title,
+      next_chapter:
+        next_chapter !== undefined
+          ? next_chapter
+          : next.url !== "#"
+          ? next
+          : null,
+      prev_chapter:
+        prev_chapter !== undefined
+          ? prev_chapter
+          : prev.url !== "#"
+          ? prev
+          : null,
     };
   }
 
