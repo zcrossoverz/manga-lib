@@ -10,6 +10,10 @@ import {
   responseListManga,
 } from "../types/type";
 import { not_null } from "../utils/validate";
+import {
+  NETTRUYEN_SORT_FILTER,
+  NETTRUYEN_STATUS_FILTER,
+} from "../constants/filter";
 
 export class Nettruyen implements AbstractMangaFactory {
   baseUrl: string;
@@ -23,11 +27,89 @@ export class Nettruyen implements AbstractMangaFactory {
     });
     this.all_genres = [] as genre[];
   }
+  async getListByGenre(
+    genre: genre,
+    page?: number,
+    status?: NETTRUYEN_STATUS_FILTER,
+    sort?: NETTRUYEN_SORT_FILTER
+  ): Promise<responseListManga> {
+    const _page = await (await this.browser).newPage();
+    let path = genre.path;
+    if (sort !== undefined) {
+      path += `?sort=${sort}${
+        status !== undefined ? `&status=${status}` : "&status=-1"
+      }${page !== undefined ? `&page=${page}` : ""}`;
+    } else if (status !== undefined) {
+      path += `?status=${status}${page !== undefined ? `&page=${page}` : ""}`;
+    } else if (page !== undefined) {
+      path += `?page=${page}`;
+    }
+    await _page.goto(`${this.baseUrl}${path}`);
+    const element = await _page.$$(
+      "#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure"
+    );
+
+    const canNext = await _page
+      .$eval(
+        "#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page",
+        () => true
+      )
+      .catch(() => false);
+
+    const canPrev = await _page
+      .$eval(
+        "#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page",
+        () => true
+      )
+      .catch(() => false);
+
+    const totalPage = parseInt(
+      not_null(
+        await _page.$eval(
+          "#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a",
+          (el) => el.getAttribute("href")
+        )
+      ).split("page=")[1]
+    );
+
+    return {
+      totalData: element.length,
+      totalPage,
+      currentPage: page !== undefined ? page : 1,
+      canNext,
+      canPrev,
+      data: await Promise.all(
+        element.map(async (e, i) => {
+          const href = not_null(
+            await e.$eval("div.image > a", (el) => el.getAttribute("href"))
+          );
+
+          const title = not_null(
+            await e.$eval("figcaption > h3 > a", (el) => el.textContent)
+          );
+
+          const image_thumbnail = not_null(
+            await e.$eval("div.image > a > img", (el) =>
+              el.getAttribute("data-original")
+            )
+          );
+          return {
+            _id: i,
+            title,
+            image_thumbnail: image_thumbnail.startsWith("//")
+              ? `https:${image_thumbnail}`
+              : image_thumbnail,
+            href,
+          };
+        })
+      ),
+    };
+  }
 
   async getDataChapter(
     url_chapter: string,
     url: string,
-    slug: string,
+    path: string,
     prev_chapter?: chapter,
     next_chapter?: chapter
   ): Promise<responseChapter> {
@@ -55,8 +137,16 @@ export class Nettruyen implements AbstractMangaFactory {
         });
         return {
           _id: i,
-          src_origin: not_null(_data_image.src_origin),
-          src_cdn: not_null(_data_image.src_cdn),
+          src_origin: not_null(_data_image.src_origin).startsWith("//")
+            ? `https:${not_null(_data_image.src_origin)}`
+            : not_null(_data_image.src_origin),
+          ...(not_null(_data_image.src_cdn) !== ""
+            ? {
+                src_cdn: not_null(_data_image.src_cdn).startsWith("//")
+                  ? `https:${not_null(_data_image.src_cdn)}`
+                  : not_null(_data_image.src_cdn),
+              }
+            : {}),
           alt: not_null(_data_image.alt),
         };
       })
@@ -73,7 +163,7 @@ export class Nettruyen implements AbstractMangaFactory {
       );
       prev.url = not_null(prev_chapter_get.url_chapter);
       prev.parent_href = url;
-      prev.slug = url.substring(`${this.baseUrl}/truyen-tranh/`.length);
+      prev.path = url.substring(`${this.baseUrl}`.length);
     }
     const next: chapter = {} as chapter;
     if (next_chapter === undefined) {
@@ -87,12 +177,12 @@ export class Nettruyen implements AbstractMangaFactory {
       );
       next.url = not_null(next_chapter_get.url_chapter);
       next.parent_href = url;
-      next.slug = url.substring(`${this.baseUrl}/truyen-tranh/`.length);
+      next.path = url.substring(`${this.baseUrl}`.length);
     }
 
     return {
       url,
-      slug,
+      path,
       chapter_data: images,
       title,
       next_chapter:
@@ -115,7 +205,7 @@ export class Nettruyen implements AbstractMangaFactory {
     await _page.goto(url);
     const content = await _page.$("#ctl00_divCenter");
     const title = await content!.$eval("article > h1", (el) => el.textContent);
-    const slug = url.substring(`${this.baseUrl}/truyen-tranh/`.length);
+    const path = url.substring(`${this.baseUrl}`.length);
     const author = await content!.$eval(
       "#item-detail > div.detail-info > div > div.col-xs-8.col-info > ul > li.author.row > p.col-xs-8",
       (el) => el.textContent
@@ -135,15 +225,13 @@ export class Nettruyen implements AbstractMangaFactory {
         const data = await e.evaluate((el) => {
           return {
             url: el.getAttribute("href"),
-            slug: el.getAttribute("href"),
+            path: el.getAttribute("href"),
             name: el.textContent,
           };
         });
         return {
           url: not_null(data.url),
-          slug: not_null(data.slug).substring(
-            `${this.baseUrl}/tim-truyen/`.length
-          ),
+          path: not_null(data.path).substring(`${this.baseUrl}`.length),
           name: not_null(data.name),
         };
       })
@@ -180,8 +268,8 @@ export class Nettruyen implements AbstractMangaFactory {
         return {
           title: not_null(chapter_anchor.title),
           url: not_null(chapter_anchor.url),
-          slug: not_null(chapter_anchor.url).substring(
-            `${this.baseUrl}/truyen-tranh/`.length
+          path: not_null(chapter_anchor.url).substring(
+            `${this.baseUrl}`.length
           ),
           parent_href: url,
           last_update: not_null(last_update),
@@ -212,7 +300,7 @@ export class Nettruyen implements AbstractMangaFactory {
 
     return {
       title: not_null(title),
-      slug,
+      path,
       author: not_null(author),
       url,
       status: not_null(status),
@@ -225,37 +313,67 @@ export class Nettruyen implements AbstractMangaFactory {
     };
   }
 
-  async getListLatestUpdate(page = 0): Promise<responseListManga[]> {
+  async getListLatestUpdate(page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
-    await _page.goto(`${this.baseUrl}${page > 0 ? `/?page=${page}` : ``}`);
+    await _page.goto(`${this.baseUrl}${page > 1 ? `/?page=${page}` : ``}`);
 
     const element = await _page.$$(
       "#ctl00_divCenter > div > div > div.items > div.row > div.item"
     );
 
-    return await Promise.all(
-      element.map(async (e, i) => {
-        const image_thumbnail: string = await e.$eval(
-          ".image > a > img",
-          (el) => el.getAttribute("data-original")!
-        );
+    const canNext = await _page
+      .$eval(
+        "#ctl00_mainContent_ctl00_divPager > ul > li > a.next-page",
+        () => true
+      )
+      .catch(() => false);
 
-        const link = await e.$eval("figure > figcaption > h3 > a", (el) => {
-          return {
-            title: el.textContent,
-            href: el.getAttribute("href"),
-          };
-        });
+    const canPrev = await _page
+      .$eval(
+        "#ctl00_mainContent_ctl00_divPager > ul > li > a.prev-page",
+        () => true
+      )
+      .catch(() => false);
 
-        return {
-          _id: i,
-          title: not_null(link.title),
-          href: not_null(link.href),
-          image_thumbnail: image_thumbnail.startsWith("//")
-            ? `https:${image_thumbnail}`
-            : image_thumbnail,
-        };
-      })
+    const totalPage = parseInt(
+      not_null(
+        await _page.$eval(
+          "#ctl00_mainContent_ctl00_divPager > ul > li:last-child > a",
+          (el) => el.getAttribute("href")
+        )
+      ).split("page=")[1]
     );
+
+    return {
+      totalData: element.length,
+      totalPage,
+      currentPage: page,
+      canNext,
+      canPrev,
+      data: await Promise.all(
+        element.map(async (e, i) => {
+          const image_thumbnail: string = await e.$eval(
+            ".image > a > img",
+            (el) => el.getAttribute("data-original")!
+          );
+
+          const link = await e.$eval("figure > figcaption > h3 > a", (el) => {
+            return {
+              title: el.textContent,
+              href: el.getAttribute("href"),
+            };
+          });
+
+          return {
+            _id: i,
+            title: not_null(link.title),
+            href: not_null(link.href),
+            image_thumbnail: image_thumbnail.startsWith("//")
+              ? `https:${image_thumbnail}`
+              : image_thumbnail,
+          };
+        })
+      ),
+    };
   }
 }

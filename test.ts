@@ -1,17 +1,16 @@
-// import { Nettruyen } from "./src/lib/nettruyen";
+/* eslint-disable @typescript-eslint/await-thenable */
+// import {
+//   NETTRUYEN_SORT_FILTER,
+//   NETTRUYEN_STATUS_FILTER,
+// } from "./src/constants/filter";
+// import { list_genres } from "./src/constants/genres";
+import { Nettruyen } from "./src/lib/nettruyen";
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 
-// const net = new Nettruyen("https://www.nettruyenplus.com");
+const net = new Nettruyen("https://www.nettruyenplus.com");
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-// (async () =>
-//   console.log(
-//     await net.getDataChapter(
-//       "https://www.nettruyenplus.com/truyen-tranh/phong-kin/chap-24/1001674",
-//       "https://www.nettruyenplus.com/truyen-tranh/vo-dich-don-ngo-79874",
-//       "sdf"
-//     )
-//   ))();
+(async () => console.log(await net.getListLatestUpdate(2)))();
 
 // import axios from "axios";
 // void (async () => {
