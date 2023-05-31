@@ -22,7 +22,7 @@ npm i manga-lib
 
 ## Usage
 
-Here's an example of how to use Manga Scraper in your code:
+Here's an example of how to use manga-lib in your code:
 
 ``` javascript
 const { Manga, MangaType } = require("manga-lib");
