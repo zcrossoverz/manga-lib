@@ -1,8 +1,12 @@
+import { MangaType } from "..";
+
 import { Browser } from "puppeteer";
 import {
   NETTRUYEN_SORT_FILTER,
   NETTRUYEN_STATUS_FILTER,
 } from "../constants/filter";
+
+/* eslint-disable @typescript-eslint/no-empty-function */
 
 export type responseListManga = {
   totalData: number;
@@ -63,28 +67,38 @@ export type responseChapter = {
   next_chapter: chapter | null;
 };
 
-export interface AbstractMangaFactory {
+export type constructorParams = {
+  baseUrl?: string;
+};
+
+export declare interface AbstractMangaFactory {
   baseUrl: string;
   browser: Promise<Browser>;
 
-  getListLatestUpdate(page: number): Promise<responseListManga>;
+  getListLatestUpdate(page?: number): Promise<responseListManga>;
 
   getDetailManga(url: string): Promise<responseDetailManga>;
 
   getDataChapter(
     url_chapter: string,
-    url: string,
-    path: string,
+    url?: string,
+    path?: string,
     prev_chapter?: chapter,
     next_chapter?: chapter
   ): Promise<responseChapter>;
 
   getListByGenre(
     genre: genre,
-    page = 1,
-    status = NETTRUYEN_STATUS_FILTER.ALL,
-    sort = NETTRUYEN_SORT_FILTER.NONE
+    page?: number,
+    status?: NETTRUYEN_STATUS_FILTER,
+    sort?: NETTRUYEN_SORT_FILTER
   ): Promise<responseListManga>;
 
-  // search(keyword: string): Promise<responseListManga>;
+  search(keyword: string, page?: number): Promise<responseListManga>;
+}
+
+export declare class Manga {
+  constructor() {}
+
+  build(type: MangaType, params?: constructorParams): AbstractMangaFactory;
 }

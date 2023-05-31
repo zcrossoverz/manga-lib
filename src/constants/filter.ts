@@ -1,10 +1,10 @@
-export enum NETTRUYEN_STATUS_FILTER {
+export declare enum NETTRUYEN_STATUS_FILTER {
   ALL = -1,
   ON_GOING = 1,
   COMPLETED = 2,
 }
 
-export enum NETTRUYEN_SORT_FILTER {
+export declare enum NETTRUYEN_SORT_FILTER {
   NEW = 15,
   TOP_ALL = 10,
   TOP_MONTH = 11,

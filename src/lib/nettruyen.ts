@@ -27,6 +27,86 @@ export class Nettruyen implements AbstractMangaFactory {
     });
     this.all_genres = [] as genre[];
   }
+
+  async search(keyword: string, page = 1): Promise<responseListManga> {
+    const _page = await (await this.browser).newPage();
+    await _page.goto(
+      `${this.baseUrl}/tim-truyen?keyword=${keyword}${
+        page > 1 ? `&page=${page}` : ``
+      }`
+    );
+
+    const element = await _page.$$(
+      "#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure"
+    );
+
+    const is_multipage = await _page
+      .$eval("#ctl00_mainContent_ctl01_divPager", () => true)
+      .catch(() => false);
+
+    const canNext = is_multipage
+      ? await _page
+          .$eval(
+            "#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page",
+            () => true
+          )
+          .catch(() => false)
+      : false;
+
+    const canPrev = is_multipage
+      ? await _page
+          .$eval(
+            "#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page",
+            () => true
+          )
+          .catch(() => false)
+      : false;
+
+    const totalPage = is_multipage
+      ? parseInt(
+          not_null(
+            await _page.$eval(
+              "#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a",
+              (el) => el.getAttribute("href")
+            )
+          ).split("page=")[1]
+        )
+      : 0;
+
+    return {
+      totalData: element.length,
+      totalPage,
+      currentPage: page !== undefined ? page : 1,
+      canNext,
+      canPrev,
+      data: await Promise.all(
+        element.map(async (e, i) => {
+          const href = not_null(
+            await e.$eval("div.image > a", (el) => el.getAttribute("href"))
+          );
+
+          const title = not_null(
+            await e.$eval("figcaption > h3 > a", (el) => el.textContent)
+          );
+
+          const image_thumbnail = not_null(
+            await e.$eval("div.image > a > img", (el) =>
+              el.getAttribute("data-original")
+            )
+          );
+          return {
+            _id: i,
+            title,
+            image_thumbnail: image_thumbnail.startsWith("//")
+              ? `https:${image_thumbnail}`
+              : image_thumbnail,
+            href,
+          };
+        })
+      ),
+    };
+  }
+
   async getListByGenre(
     genre: genre,
     page?: number,
@@ -108,11 +188,14 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async getDataChapter(
     url_chapter: string,
-    url: string,
-    path: string,
+    url?: string,
+    path?: string,
     prev_chapter?: chapter,
     next_chapter?: chapter
   ): Promise<responseChapter> {
+    url = url !== undefined ? url : "";
+    path = path !== undefined ? path : "";
+
     const _page = await (await this.browser).newPage();
     await _page.goto(url_chapter);
     const content = await _page.$(

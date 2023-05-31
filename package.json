@@ -1,7 +1,34 @@
 {
-  "scripts": {
-    "test": "nodemon test.ts"
+  "name": "manga-lib",
+  "author": "Nhan Nguyen",
+  "version": "1.0.36",
+  "license": "MIT",
+  "description": "A library for scraping manga from various websites.",
+  "repository": "https://github.com/zcrossoverz/manga-lib",
+  "bugs": {
+    "url": "https://github.com/zcrossoverz/manga-lib/issues",
+    "email": "nhannguyen.dev3@gmail.com"
   },
+  "keywords": [
+    "manga",
+    "scraping",
+    "nettruyen",
+    "crawl",
+    "manga crawl",
+    "crossover",
+    "web scraping",
+    "manga scraping",
+    "manga crawl",
+    "manga crawler",
+    "manga scrapper",
+    "manga-lib"
+  ],
+  "scripts": {
+    "test": "nodemon test.ts",
+    "build": "npx tsc"
+  },
+  "types": "./src/types/type.d.ts",
+  "main": "./dist/src/index.js",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.5",
     "@typescript-eslint/parser": "^5.59.5",
