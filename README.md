@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Manga Scraper is a library that allows you to easily scrape manga content from various websites.
+manga-lib is a library that allows you to easily scrape manga content from various websites.
 
 ## Features
 
