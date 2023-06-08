@@ -1,7 +1,7 @@
 {
   "name": "manga-lib",
   "author": "Nhan Nguyen",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "license": "MIT",
   "description": "A library for scraping manga from various websites.",
   "repository": "https://github.com/zcrossoverz/manga-lib",

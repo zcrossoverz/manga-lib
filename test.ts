@@ -29,12 +29,19 @@ import { Manga, MangaType } from "./src";
 
 // });
 
+// Array.from(
+//   document.querySelectorAll(
+//     "body > div.wrap > div > div > div.c-breadcrumb-wrapper > div > div > div > div.c-genres-block.archive-page > div > div.genres__collapse > div > ul > li > a"
+//   )
+// ).map((e) => {
+//   return {
+//     name: e.textContent?.trim().split(" (")[0].split("\n")[0],
+//     path: e.getAttribute("href")?.substring("https://toonily.com".length),
+//   };
+// });
+
 const t = new Manga().build(MangaType.TOONILY);
 
 void (async () => {
-  console.log(
-    await t.getDataChapter(
-      "https://toonily.com/webtoon/writer-sungs-life/chapter-8/"
-    )
-  );
+  console.log(await t.search("h", 19));
 })();

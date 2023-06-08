@@ -3,4 +3,8 @@ export declare const list_genres: {
         name: string;
         path: string;
     }[];
+    toonily: {
+        name: string;
+        path: string;
+    }[];
 };

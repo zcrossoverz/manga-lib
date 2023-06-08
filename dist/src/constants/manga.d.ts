@@ -1,3 +1,4 @@
 export declare enum MangaType {
-    NETTRUYEN = "nettruyen"
+    NETTRUYEN = "nettruyen",
+    TOONILY = "toonily"
 }

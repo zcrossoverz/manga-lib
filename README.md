@@ -24,7 +24,7 @@ npm i manga-lib
 
 Here's an example of how to use manga-lib in your code:
 
-``` javascript
+```javascript
 const { Manga, MangaType } = require("manga-lib");
 
 // Create a new instance of the manga site, MangaType.NETTRUYEN is currently support for https://www.nettruyenplus.com/
@@ -35,15 +35,17 @@ const latest = await manga.getListLatestUpdate();
 const latest_page_2 = await manga.getListLatestUpdate(2);
 
 // Retrieve the manga details
-const detail_manga = await manga.getDetailManga("https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story-86175")
+const detail_manga = await manga.getDetailManga(
+  "https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story-86175"
+);
 
 // Get data chapter
-const data_chapter = await manga.getDataChapter("https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story/chap-1/1004177");
+const data_chapter = await manga.getDataChapter(
+  "https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story/chap-1/1004177"
+);
 
 // Search manga
 const search_manga = await manga.search("one piece");
-
-
 ```
 
 ## Supported Websites
@@ -51,6 +53,8 @@ const search_manga = await manga.search("one piece");
 The manga-lib currently supports the following manga websites (updating):
 
 - nettruyen
+
+- toonily
 
 ## Contributing
 

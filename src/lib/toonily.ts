@@ -57,8 +57,6 @@ export class Toonily implements AbstractMangaFactory {
 
     const last_page = $("div.wp-pagenavi").find("a.last").attr("href")!;
 
-    console.log(last_page);
-
     const totalPage = Number(
       last_page !== undefined
         ? last_page
@@ -75,7 +73,7 @@ export class Toonily implements AbstractMangaFactory {
       totalData: data.length,
       totalPage,
       currentPage: page !== undefined ? page : 1,
-      canNext: page !== undefined ? page < totalPage : true,
+      canNext: page !== undefined ? page < totalPage : 1 < totalPage,
       canPrev: page !== undefined ? page > 1 : false,
     };
   }
@@ -229,10 +227,62 @@ export class Toonily implements AbstractMangaFactory {
   ): Promise<responseListManga> {
     throw new Error("Method not implemented.");
   }
-  search(
+  async search(
     keyword: string,
     page?: number | undefined
   ): Promise<responseListManga> {
-    throw new Error("Method not implemented.");
+    keyword = keyword.replace(/\s/g, "-");
+    const axios_get = await axios.get(
+      `${this.baseUrl}/search/${keyword}${
+        page !== undefined && page > 1 ? `/page/${page}` : ``
+      }`
+    );
+    const $ = cheerio.load(axios_get.data);
+    const wrap_items = $(
+      "div.page-listing-item > div.row.row-eq-height > div > div"
+    );
+
+    const data: {
+      _id: number;
+      title: string;
+      image_thumbnail: string;
+      href: string;
+    }[] = [];
+    wrap_items.each((i, e) => {
+      data.push({
+        _id: i,
+        title: $(e)
+          .find("div.item-summary > div.post-title.font-title > h3 > a")
+          .text(),
+        image_thumbnail: $(e)
+          .find("div.item-thumb.c-image-hover > a > img")
+          .attr("data-src")!,
+        href: $(e)
+          .find("div.item-summary > div.post-title.font-title > h3 > a")
+          .attr("href")!,
+      });
+    });
+
+    const last_page = $("div.wp-pagenavi").find("a.last").attr("href")!;
+
+    const totalPage = Number(
+      last_page !== undefined
+        ? last_page
+            .substring(0, last_page.length - 1)
+            .split("/")
+            .at(-1)
+        : page !== undefined
+        ? page
+        : 1
+    );
+
+    return {
+      data,
+      totalData: data.length,
+      totalPage,
+      currentPage: page !== undefined ? page : 1,
+      canNext: page !== undefined ? page < totalPage : 1 < totalPage,
+      canPrev: page !== undefined ? page > 1 : false,
+    };
   }
 }

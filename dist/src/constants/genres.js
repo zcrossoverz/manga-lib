@@ -212,4 +212,114 @@ exports.list_genres = {
             path: "/tim-truyen/xuyen-khong-205",
         },
     ],
+    toonily: [
+        {
+            name: "Action",
+            path: "/webtoon-genre/action/",
+        },
+        {
+            name: "Adventure",
+            path: "/webtoon-genre/adventure/",
+        },
+        {
+            name: "Comedy",
+            path: "/webtoon-genre/comedy/",
+        },
+        {
+            name: "Crime",
+            path: "/webtoon-genre/crime/",
+        },
+        {
+            name: "Drama",
+            path: "/webtoon-genre/drama/",
+        },
+        {
+            name: "Fantasy",
+            path: "/webtoon-genre/fantasy/",
+        },
+        {
+            name: "Gossip",
+            path: "/webtoon-genre/gossip/",
+        },
+        {
+            name: "Historical",
+            path: "/webtoon-genre/historical/",
+        },
+        {
+            name: "Horror",
+            path: "/webtoon-genre/horror/",
+        },
+        {
+            name: "Josei",
+            path: "/webtoon-genre/josei/",
+        },
+        {
+            name: "Magic",
+            path: "/webtoon-genre/magic/",
+        },
+        {
+            name: "Mature",
+            path: "/webtoon-genre/mature/",
+        },
+        {
+            name: "Mystery",
+            path: "/webtoon-genre/mystery/",
+        },
+        {
+            name: "Psychological",
+            path: "/webtoon-genre/psychological/",
+        },
+        {
+            name: "Romance",
+            path: "/webtoon-genre/romance/",
+        },
+        {
+            name: "School Life",
+            path: "/webtoon-genre/school-life/",
+        },
+        {
+            name: "Sci-Fi",
+            path: "/webtoon-genre/scifi-webtoon/",
+        },
+        {
+            name: "Seinen",
+            path: "/webtoon-genre/seinen/",
+        },
+        {
+            name: "Shoujo",
+            path: "/webtoon-genre/shoujo/",
+        },
+        {
+            name: "Shounen",
+            path: "/webtoon-genre/shounen/",
+        },
+        {
+            name: "Slice of Life",
+            path: "/webtoon-genre/slice-of-life/",
+        },
+        {
+            name: "Sports",
+            path: "/webtoon-genre/sports/",
+        },
+        {
+            name: "Supernatural",
+            path: "/webtoon-genre/supernatural/",
+        },
+        {
+            name: "Thriller",
+            path: "/webtoon-genre/thriller/",
+        },
+        {
+            name: "Tragedy",
+            path: "/webtoon-genre/tragedy/",
+        },
+        {
+            name: "Yaoi",
+            path: "/webtoon-genre/yaoi/",
+        },
+        {
+            name: "Yuri",
+            path: "/webtoon-genre/yuri/",
+        },
+    ],
 };

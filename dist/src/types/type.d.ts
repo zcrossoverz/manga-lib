@@ -58,7 +58,8 @@ export type constructorParams = {
 };
 export interface AbstractMangaFactory {
     baseUrl: string;
-    browser: Promise<Browser>;
+    browser?: Promise<Browser>;
+    all_genres: genre[];
     getListLatestUpdate(page?: number): Promise<responseListManga>;
     getDetailManga(url: string): Promise<responseDetailManga>;
     getDataChapter(url_chapter: string, url?: string, path?: string, prev_chapter?: chapter, next_chapter?: chapter): Promise<responseChapter>;
