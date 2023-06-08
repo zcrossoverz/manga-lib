@@ -78,8 +78,76 @@ export class Toonily implements AbstractMangaFactory {
       canPrev: page !== undefined ? page > 1 : false,
     };
   }
-  getDetailManga(url: string): Promise<responseDetailManga> {
-    throw new Error("Method not implemented.");
+  async getDetailManga(url: string): Promise<responseDetailManga> {
+    const $ = cheerio.load((await axios.get(url)).data);
+
+    const site_content = $("div.site-content");
+
+    const path = url.substring(this.baseUrl.length);
+    const author = site_content
+      .find("div.summary-content > div.author-content > a")
+      .text();
+    const title = site_content
+      .find("div.post-content > div.post-title > h1")
+      .text()
+      .trim();
+    const status = site_content
+      .find("div.post-status > div.post-content_item > div.summary-content")
+      .text()
+      .trim();
+    const genres: genre[] = [] as genre[];
+    $("div.genres-content > a").each((_i, e) => {
+      genres.push({
+        url: $(e).attr("href")!,
+        name: $(e).text(),
+        path: $(e).attr("href")!.substring(this.baseUrl.length),
+      });
+    });
+
+    const views = site_content
+      .find(
+        "div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-content > div:nth-child(5) > div.summary-content"
+      )
+      .text()
+      .split("views")[0]
+      .trim()
+      .split(" ")
+      .at(-1)!;
+
+    const rate = site_content.find("#averagerate").text().trim();
+    const rate_number = site_content.find("#countrate").text();
+    const follows = site_content
+      .find(
+        "div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-status > div.manga-action > div.add-bookmark > div.action_detail > span"
+      )
+      .text()
+      .split(" ")[0];
+
+    const chapters: chapter[] = [] as chapter[];
+    site_content
+      .find("ul.main.version-chap.no-volumn > li.wp-manga-chapter")
+      .each((i, e) => {
+        chapters.push({
+          url: $(e).find("a").attr("href")!,
+          path: $(e).find("a").attr("href")!.substring(this.baseUrl.length),
+          parent_href: url,
+          title: $(e).find("a").text().trim(),
+        });
+      });
+
+    return {
+      path,
+      url,
+      author,
+      genres,
+      rate,
+      rate_number,
+      follows,
+      views,
+      title,
+      status,
+      chapters,
+    };
   }
   getDataChapter(
     url_chapter: string,

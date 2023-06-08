@@ -32,5 +32,7 @@ import { Manga, MangaType } from "./src";
 const t = new Manga().build(MangaType.TOONILY);
 
 void (async () => {
-  console.log(await t.getListLatestUpdate(14));
+  console.log(
+    await t.getDetailManga("https://toonily.com/webtoon/writer-sungs-life/")
+  );
 })();
