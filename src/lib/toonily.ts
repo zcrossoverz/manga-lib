@@ -10,6 +10,7 @@ import {
   AbstractMangaFactory,
   chapter,
   genre,
+  image_chapter,
   responseChapter,
   responseDetailManga,
   responseListManga,
@@ -149,14 +150,76 @@ export class Toonily implements AbstractMangaFactory {
       chapters,
     };
   }
-  getDataChapter(
+  async getDataChapter(
     url_chapter: string,
     url?: string | undefined,
     path?: string | undefined,
     prev_chapter?: chapter | undefined,
     next_chapter?: chapter | undefined
   ): Promise<responseChapter> {
-    throw new Error("Method not implemented.");
+    const $ = cheerio.load((await axios.get(url_chapter)).data);
+
+    const site_content = $("div.main-col-inner");
+    const title = site_content
+      .find("ol.breadcrumb > li:nth-child(3)")
+      .text()
+      .trim();
+
+    const chapter_data: image_chapter[] = [] as image_chapter[];
+    site_content
+      .find("div.entry-content div.reading-content > div.page-break > img")
+      .each((i, e) => {
+        chapter_data.push({
+          _id: i,
+          src_origin: $(e).attr("data-src")!.trim(),
+          alt: $(e).attr("alt")!,
+        });
+      });
+
+    const parent_href = site_content
+      .find("ol.breadcrumb > li:nth-child(3) > a")
+      .attr("href")!;
+
+    const next_chapter_data: chapter | null = site_content.find(
+      "div.nav-links > div.nav-next > a"
+    ).length
+      ? {
+          url: site_content
+            .find("div.nav-links > div.nav-next > a")
+            .attr("href")!,
+          path: site_content
+            .find("div.nav-links > div.nav-next > a")
+            .attr("href")!
+            .substring(this.baseUrl.length),
+          parent_href: parent_href,
+          title,
+        }
+      : null;
+
+    const prev_chapter_data: chapter | null = site_content.find(
+      "div.nav-links > div.nav-previous > a"
+    ).length
+      ? {
+          url: site_content
+            .find("div.nav-links > div.nav-previous > a")
+            .attr("href")!,
+          path: site_content
+            .find("div.nav-links > div.nav-previous > a")
+            .attr("href")!
+            .substring(this.baseUrl.length),
+          parent_href: parent_href,
+          title,
+        }
+      : null;
+
+    return {
+      url: url_chapter,
+      path: url_chapter.substring(this.baseUrl.length),
+      title,
+      chapter_data,
+      prev_chapter: prev_chapter !== undefined ? null : prev_chapter_data,
+      next_chapter: next_chapter !== undefined ? null : next_chapter_data,
+    };
   }
   getListByGenre(
     genre: genre,

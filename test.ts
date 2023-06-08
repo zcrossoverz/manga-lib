@@ -33,6 +33,8 @@ const t = new Manga().build(MangaType.TOONILY);
 
 void (async () => {
   console.log(
-    await t.getDetailManga("https://toonily.com/webtoon/writer-sungs-life/")
+    await t.getDataChapter(
+      "https://toonily.com/webtoon/writer-sungs-life/chapter-8/"
+    )
   );
 })();
