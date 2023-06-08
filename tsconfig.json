@@ -26,6 +26,7 @@
     "strict": true /* Enable all strict type-checking options. */,
     "noUnusedLocals": true /* Enable error reporting when local variables aren't read. */,
     "noImplicitReturns": true /* Enable error reporting for codepaths that do not explicitly return in a function. */,
+    "declaration": true,
 
     "skipLibCheck": true
   }

@@ -1,4 +1,4 @@
-import { MangaType } from "..";
+// import { MangaType } from "..";
 
 import { Browser } from "puppeteer";
 import {
@@ -22,13 +22,13 @@ export type responseListManga = {
   }[];
 };
 
-type genre = {
+export type genre = {
   url?: string;
   name: string;
   path: string;
 };
 
-type chapter = {
+export type chapter = {
   path: string;
   url: string;
   parent_href: string;
@@ -71,9 +71,10 @@ export type constructorParams = {
   baseUrl?: string;
 };
 
-export declare interface AbstractMangaFactory {
+export interface AbstractMangaFactory {
   baseUrl: string;
-  browser: Promise<Browser>;
+  browser?: Promise<Browser>;
+  all_genres: genre[];
 
   getListLatestUpdate(page?: number): Promise<responseListManga>;
 
@@ -97,8 +98,8 @@ export declare interface AbstractMangaFactory {
   search(keyword: string, page?: number): Promise<responseListManga>;
 }
 
-export declare class Manga {
-  constructor() {}
+// export declare class Manga {
+//   constructor() {}
 
-  build(type: MangaType, params?: constructorParams): AbstractMangaFactory;
-}
+//   build(type: MangaType, params?: constructorParams): AbstractMangaFactory;
+// }

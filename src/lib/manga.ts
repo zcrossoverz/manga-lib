@@ -2,6 +2,7 @@
 import { MangaType } from "../constants/manga";
 import { Nettruyen } from "../lib/nettruyen";
 import { AbstractMangaFactory, constructorParams } from "../types/type";
+import { Toonily } from "./toonily";
 
 export class Manga {
   constructor() {}
@@ -15,6 +16,15 @@ export class Manga {
             : "https://www.nettruyenplus.com"
         );
       }
+
+      case MangaType.TOONILY: {
+        return new Toonily(
+          params !== undefined && params.baseUrl !== undefined
+            ? params.baseUrl
+            : "https://toonily.com"
+        );
+      }
+
       default: {
         return new Nettruyen("https://www.nettruyenplus.com");
       }

@@ -1,7 +1,7 @@
 {
   "name": "manga-lib",
   "author": "Nhan Nguyen",
-  "version": "1.0.38",
+  "version": "1.0.44",
   "license": "MIT",
   "description": "A library for scraping manga from various websites.",
   "repository": "https://github.com/zcrossoverz/manga-lib",
@@ -27,7 +27,7 @@
     "test": "nodemon test.ts",
     "build": "npx tsc"
   },
-  "types": "./src/types/type.d.ts",
+  "types": "./dist/src/index.d.ts",
   "main": "./dist/src/index.js",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.5",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
     "puppeteer": "^20.3.0"
   }
 }
