@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import puppeteer, { Browser } from "puppeteer";
 import {
@@ -30,6 +31,11 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async search(keyword: string, page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    await _page.setRequestInterception(true);
+    _page.on("request", (req) => {
+      if (req.resourceType() !== "document") req.abort();
+      else req.continue();
+    });
     await _page.goto(
       `${this.baseUrl}/tim-truyen?keyword=${keyword}${
         page > 1 ? `&page=${page}` : ``
@@ -124,6 +130,11 @@ export class Nettruyen implements AbstractMangaFactory {
     } else if (page !== undefined) {
       path += `?page=${page}`;
     }
+    await _page.setRequestInterception(true);
+    _page.on("request", (req) => {
+      if (req.resourceType() !== "document") req.abort();
+      else req.continue();
+    });
     await _page.goto(`${this.baseUrl}${path}`);
     const element = await _page.$$(
       "#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure"
@@ -197,6 +208,11 @@ export class Nettruyen implements AbstractMangaFactory {
     path = path !== undefined ? path : "";
 
     const _page = await (await this.browser).newPage();
+    await _page.setRequestInterception(true);
+    _page.on("request", (req) => {
+      if (req.resourceType() !== "document") req.abort();
+      else req.continue();
+    });
     await _page.goto(url_chapter);
     const content = await _page.$(
       "#ctl00_divCenter > div > div.reading-detail.box_doc"
@@ -285,6 +301,11 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async getDetailManga(url: string): Promise<responseDetailManga> {
     const _page = await (await this.browser).newPage();
+    await _page.setRequestInterception(true);
+    _page.on("request", (req) => {
+      if (req.resourceType() !== "document") req.abort();
+      else req.continue();
+    });
     await _page.goto(url);
     const content = await _page.$("#ctl00_divCenter");
     const title = await content!.$eval("article > h1", (el) => el.textContent);
@@ -398,6 +419,11 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async getListLatestUpdate(page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    await _page.setRequestInterception(true);
+    _page.on("request", (req) => {
+      if (req.resourceType() !== "document") req.abort();
+      else req.continue();
+    });
     await _page.goto(`${this.baseUrl}${page > 1 ? `/?page=${page}` : ``}`);
 
     const element = await _page.$$(

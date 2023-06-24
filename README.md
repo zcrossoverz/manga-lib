@@ -28,7 +28,11 @@ Here's an example of how to use manga-lib in your code:
 const { Manga, MangaType } = require("manga-lib");
 
 // Create a new instance of the manga site, MangaType.NETTRUYEN is currently support for https://www.nettruyenplus.com/
-const manga = new Manga().build(MangaType.NETTRUYEN);
+const manga = new Manga().build(MangaType.TOONILY);
+// Create a new instance with custom url
+const manga = new Manga().build(MangaType.TOONILY, {
+  baseUrl: "https://domain.com/",
+});
 
 // Get list latest manga
 const latest = await manga.getListLatestUpdate();
@@ -36,12 +40,12 @@ const latest_page_2 = await manga.getListLatestUpdate(2);
 
 // Retrieve the manga details
 const detail_manga = await manga.getDetailManga(
-  "https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story-86175"
+  "https://toonily.com/webtoon/nano-machine/"
 );
 
 // Get data chapter
 const data_chapter = await manga.getDataChapter(
-  "https://www.nettruyenplus.com/truyen-tranh/the-eminence-in-shadowto-be-a-power-in-the-shadows-side-story/chap-1/1004177"
+  "https://toonily.com/webtoon/nano-machine/chapter-159/"
 );
 
 // Search manga

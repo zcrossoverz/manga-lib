@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import axios from "axios";
-import {
-  NETTRUYEN_STATUS_FILTER,
-  NETTRUYEN_SORT_FILTER,
-} from "../constants/filter";
 import * as cheerio from "cheerio";
 import {
   AbstractMangaFactory,
@@ -219,14 +215,7 @@ export class Toonily implements AbstractMangaFactory {
       next_chapter: next_chapter !== undefined ? null : next_chapter_data,
     };
   }
-  getListByGenre(
-    genre: genre,
-    page?: number | undefined,
-    status?: NETTRUYEN_STATUS_FILTER | undefined,
-    sort?: NETTRUYEN_SORT_FILTER | undefined
-  ): Promise<responseListManga> {
-    throw new Error("Method not implemented.");
-  }
+
   async search(
     keyword: string,
     page?: number | undefined

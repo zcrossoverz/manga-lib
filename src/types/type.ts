@@ -1,12 +1,5 @@
-// import { MangaType } from "..";
-
-import { Browser } from "puppeteer";
-import {
-  NETTRUYEN_SORT_FILTER,
-  NETTRUYEN_STATUS_FILTER,
-} from "../constants/filter";
-
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { Browser } from "puppeteer";
 
 export type responseListManga = {
   totalData: number;
@@ -88,12 +81,12 @@ export interface AbstractMangaFactory {
     next_chapter?: chapter
   ): Promise<responseChapter>;
 
-  getListByGenre(
-    genre: genre,
-    page?: number,
-    status?: NETTRUYEN_STATUS_FILTER,
-    sort?: NETTRUYEN_SORT_FILTER
-  ): Promise<responseListManga>;
+  // getListByGenre(
+  //   genre: genre,
+  //   page?: number,
+  //   status?: NETTRUYEN_STATUS_FILTER,
+  //   sort?: NETTRUYEN_SORT_FILTER
+  // ): Promise<responseListManga>;
 
   search(keyword: string, page?: number): Promise<responseListManga>;
 }

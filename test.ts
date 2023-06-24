@@ -40,8 +40,12 @@ import { Manga, MangaType } from "./src";
 //   };
 // });
 
-const t = new Manga().build(MangaType.TOONILY);
+const t = new Manga().build(MangaType.MANGAREADER);
 
 void (async () => {
-  console.log(await t.search("h", 19));
+  console.log(
+    await t.getDataChapter(
+      "https://mangareader.to/read/afterschool-war-activities-700/en/chapter-51"
+    )
+  );
 })();
