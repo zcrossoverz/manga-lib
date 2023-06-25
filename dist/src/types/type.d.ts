@@ -1,5 +1,4 @@
 import { Browser } from "puppeteer";
-import { NETTRUYEN_SORT_FILTER, NETTRUYEN_STATUS_FILTER } from "../constants/filter";
 export type responseListManga = {
     totalData: number;
     canNext: boolean;
@@ -63,6 +62,5 @@ export interface AbstractMangaFactory {
     getListLatestUpdate(page?: number): Promise<responseListManga>;
     getDetailManga(url: string): Promise<responseDetailManga>;
     getDataChapter(url_chapter: string, url?: string, path?: string, prev_chapter?: chapter, next_chapter?: chapter): Promise<responseChapter>;
-    getListByGenre(genre: genre, page?: number, status?: NETTRUYEN_STATUS_FILTER, sort?: NETTRUYEN_SORT_FILTER): Promise<responseListManga>;
     search(keyword: string, page?: number): Promise<responseListManga>;
 }

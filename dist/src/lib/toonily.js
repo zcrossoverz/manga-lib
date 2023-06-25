@@ -202,9 +202,6 @@ class Toonily {
             };
         });
     }
-    getListByGenre(genre, page, status, sort) {
-        throw new Error("Method not implemented.");
-    }
     search(keyword, page) {
         return __awaiter(this, void 0, void 0, function* () {
             keyword = keyword.replace(/\s/g, "-");

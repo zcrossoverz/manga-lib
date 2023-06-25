@@ -11,7 +11,7 @@ class Manga {
             case manga_1.MangaType.NETTRUYEN: {
                 return new nettruyen_1.Nettruyen(params !== undefined && params.baseUrl !== undefined
                     ? params.baseUrl
-                    : "https://www.nettruyenplus.com");
+                    : "https://www.nettruyenmax.com");
             }
             case manga_1.MangaType.TOONILY: {
                 return new toonily_1.Toonily(params !== undefined && params.baseUrl !== undefined
@@ -19,7 +19,7 @@ class Manga {
                     : "https://toonily.com");
             }
             default: {
-                return new nettruyen_1.Nettruyen("https://www.nettruyenplus.com");
+                return new nettruyen_1.Nettruyen("https://www.nettruyenmax.com");
             }
         }
     }

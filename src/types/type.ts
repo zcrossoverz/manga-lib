@@ -5,7 +5,7 @@ export type responseListManga = {
   totalData: number;
   canNext: boolean;
   canPrev: boolean;
-  totalPage: number;
+  totalPage?: number;
   currentPage: number;
   data: {
     _id: number;
@@ -37,10 +37,10 @@ export type responseDetailManga = {
   title: string;
   status: string;
   genres: genre[];
-  views: string;
-  rate: string;
-  rate_number: string;
-  follows: string;
+  views?: string;
+  rate?: string;
+  rate_number?: string;
+  follows?: string;
   chapters: chapter[];
 };
 
@@ -52,8 +52,8 @@ export type image_chapter = {
 };
 
 export type responseChapter = {
-  url: string;
-  path: string;
+  url?: string;
+  path?: string;
   title: string;
   chapter_data: image_chapter[];
   prev_chapter: chapter | null;

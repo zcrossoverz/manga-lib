@@ -2,6 +2,7 @@
 import { MangaType } from "../constants/manga";
 import { Nettruyen } from "../lib/nettruyen";
 import { AbstractMangaFactory, constructorParams } from "../types/type";
+import { AsuraScans } from "./asurascans";
 import { Toonily } from "./toonily";
 
 export class Manga {
@@ -22,6 +23,14 @@ export class Manga {
           params !== undefined && params.baseUrl !== undefined
             ? params.baseUrl
             : "https://toonily.com"
+        );
+      }
+
+      case MangaType.ASURASCANS: {
+        return new AsuraScans(
+          params !== undefined && params.baseUrl !== undefined
+            ? params.baseUrl
+            : "https://www.asurascans.com"
         );
       }
 

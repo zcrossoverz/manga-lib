@@ -40,12 +40,12 @@ import { Manga, MangaType } from "./src";
 //   };
 // });
 
-const t = new Manga().build(MangaType.MANGAREADER);
+const t = new Manga().build(MangaType.ASURASCANS);
 
 void (async () => {
   console.log(
     await t.getDataChapter(
-      "https://mangareader.to/read/afterschool-war-activities-700/en/chapter-51"
+      "https://www.asurascans.com/0906168628-boundless-necromancer-chapter-2/"
     )
   );
 })();

@@ -11,6 +11,7 @@ import {
   responseDetailManga,
   responseListManga,
 } from "../types/type";
+import { useGetDataItemsManga } from "../hooks/getListLatest";
 
 export class Toonily implements AbstractMangaFactory {
   baseUrl: string;
@@ -28,28 +29,17 @@ export class Toonily implements AbstractMangaFactory {
       `${this.baseUrl}${page !== undefined && page > 1 ? `/page/${page}` : ``}`
     );
     const $ = cheerio.load(axios_get.data);
-    const wrap_items = $("#loop-content > div > div > div");
 
-    const data: {
-      _id: number;
-      title: string;
-      image_thumbnail: string;
-      href: string;
-    }[] = [];
-    wrap_items.each((i, e) => {
-      data.push({
-        _id: i,
-        title: $(e)
-          .find("div.item-summary > div.post-title.font-title > h3 > a")
-          .text(),
-        image_thumbnail: $(e)
-          .find("div.item-thumb.c-image-hover > a > img")
-          .attr("data-src")!,
-        href: $(e)
-          .find("div.item-summary > div.post-title.font-title > h3 > a")
-          .attr("href")!,
-      });
-    });
+    const paramsSelector = {
+      cheerioApi: $,
+      wrapSelector: "#loop-content > div > div > div",
+      titleSelector: "div.item-summary > div.post-title.font-title > h3 > a",
+      thumbnailSelector: "div.item-thumb.c-image-hover > a > img",
+      thumbnailAttr: "data-src",
+      hrefSelector: "div.item-summary > div.post-title.font-title > h3 > a",
+    };
+
+    const data = await useGetDataItemsManga(paramsSelector);
 
     const last_page = $("div.wp-pagenavi").find("a.last").attr("href")!;
 

@@ -26,6 +26,13 @@ class Nettruyen {
     search(keyword, page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            yield _page.setRequestInterception(true);
+            _page.on("request", (req) => {
+                if (req.resourceType() !== "document")
+                    req.abort();
+                else
+                    req.continue();
+            });
             yield _page.goto(`${this.baseUrl}/tim-truyen?keyword=${keyword}${page > 1 ? `&page=${page}` : ``}`);
             const element = yield _page.$$("#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure");
             const is_multipage = yield _page
@@ -79,6 +86,13 @@ class Nettruyen {
             else if (page !== undefined) {
                 path += `?page=${page}`;
             }
+            yield _page.setRequestInterception(true);
+            _page.on("request", (req) => {
+                if (req.resourceType() !== "document")
+                    req.abort();
+                else
+                    req.continue();
+            });
             yield _page.goto(`${this.baseUrl}${path}`);
             const element = yield _page.$$("#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure");
             const canNext = yield _page
@@ -115,6 +129,13 @@ class Nettruyen {
             url = url !== undefined ? url : "";
             path = path !== undefined ? path : "";
             const _page = yield (yield this.browser).newPage();
+            yield _page.setRequestInterception(true);
+            _page.on("request", (req) => {
+                if (req.resourceType() !== "document")
+                    req.abort();
+                else
+                    req.continue();
+            });
             yield _page.goto(url_chapter);
             const content = yield _page.$("#ctl00_divCenter > div > div.reading-detail.box_doc");
             const title = (0, validate_1.not_null)(yield _page.$eval("#ctl00_divCenter > div > div:nth-child(1) > div.top > h1", (el) => el.textContent));
@@ -179,6 +200,13 @@ class Nettruyen {
     getDetailManga(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            yield _page.setRequestInterception(true);
+            _page.on("request", (req) => {
+                if (req.resourceType() !== "document")
+                    req.abort();
+                else
+                    req.continue();
+            });
             yield _page.goto(url);
             const content = yield _page.$("#ctl00_divCenter");
             const title = yield content.$eval("article > h1", (el) => el.textContent);
@@ -243,6 +271,13 @@ class Nettruyen {
     getListLatestUpdate(page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            yield _page.setRequestInterception(true);
+            _page.on("request", (req) => {
+                if (req.resourceType() !== "document")
+                    req.abort();
+                else
+                    req.continue();
+            });
             yield _page.goto(`${this.baseUrl}${page > 1 ? `/?page=${page}` : ``}`);
             const element = yield _page.$$("#ctl00_divCenter > div > div > div.items > div.row > div.item");
             const canNext = yield _page
