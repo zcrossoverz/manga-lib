@@ -13,7 +13,7 @@ export class Manga {
         return new Nettruyen(
           params !== undefined && params.baseUrl !== undefined
             ? params.baseUrl
-            : "https://www.nettruyenmax.com/"
+            : "https://www.nettruyenmax.com"
         );
       }
 
@@ -26,7 +26,7 @@ export class Manga {
       }
 
       default: {
-        return new Nettruyen("https://www.nettruyenplus.com");
+        return new Nettruyen("https://www.nettruyenmax.com");
       }
     }
   }
