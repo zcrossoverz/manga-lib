@@ -45,7 +45,7 @@ const t = new Manga().build(MangaType.ASURASCANS);
 void (async () => {
   console.log(
     await t.getDataChapter(
-      "https://www.asurascans.com/0906168628-boundless-necromancer-chapter-2/"
+      "https://www.asurascans.com/the-priest-of-corruption-chapter-5/"
     )
   );
 })();
