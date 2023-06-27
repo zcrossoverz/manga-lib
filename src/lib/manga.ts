@@ -3,6 +3,7 @@ import { MangaType } from "../constants/manga";
 import { Nettruyen } from "../lib/nettruyen";
 import { AbstractMangaFactory, constructorParams } from "../types/type";
 import { AsuraScans } from "./asurascans";
+import { Blogtruyen } from "./blogtruyen";
 import { Toonily } from "./toonily";
 
 export class Manga {
@@ -34,7 +35,7 @@ export class Manga {
         );
       }
       case MangaType.BLOGTRUYEN: {
-        return new AsuraScans(
+        return new Blogtruyen(
           params !== undefined && params.baseUrl !== undefined
             ? params.baseUrl
             : "https://blogtruyen.vn"
