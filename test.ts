@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // import axios from "axios";
 // import * as cheerio from "cheerio";
-import { Manga, MangaType } from "./src";
+import { Manga, MangaType } from './src';
 
 // void (async () => {
 //   const t = await axios("https://ww5.mangakakalot.tv/");
@@ -40,12 +40,12 @@ import { Manga, MangaType } from "./src";
 //   };
 // });
 
-const t = new Manga().build(MangaType.ASURASCANS);
+const t = new Manga().build(MangaType.BLOGTRUYEN);
 
 void (async () => {
-  console.log(
-    await t.getDataChapter(
-      "https://www.asurascans.com/the-priest-of-corruption-chapter-5/"
-    )
-  );
+    console.log(
+        await t.getDetailManga(
+            'https://blogtruyen.vn/30958/thanh-nu-xin-hay-dung-ngay-nhung-tro-quai-dan-cua-co-di'
+        )
+    );
 })();
