@@ -5,4 +5,6 @@ var MangaType;
 (function (MangaType) {
     MangaType["NETTRUYEN"] = "nettruyen";
     MangaType["TOONILY"] = "toonily";
+    MangaType["ASURASCANS"] = "asurascans";
+    MangaType["BLOGTRUYEN"] = "blogtruyen";
 })(MangaType = exports.MangaType || (exports.MangaType = {}));

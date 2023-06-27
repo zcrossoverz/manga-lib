@@ -38,36 +38,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Toonily = void 0;
 const axios_1 = __importDefault(require("axios"));
 const cheerio = __importStar(require("cheerio"));
+const getListLatest_1 = require("../hooks/getListLatest");
 class Toonily {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
         this.all_genres = [];
     }
+    getListByGenre(genre, page, status, sort) {
+        throw new Error('Method not implemented.');
+    }
     getListLatestUpdate(page) {
         return __awaiter(this, void 0, void 0, function* () {
             const axios_get = yield axios_1.default.get(`${this.baseUrl}${page !== undefined && page > 1 ? `/page/${page}` : ``}`);
             const $ = cheerio.load(axios_get.data);
-            const wrap_items = $("#loop-content > div > div > div");
-            const data = [];
-            wrap_items.each((i, e) => {
-                data.push({
-                    _id: i,
-                    title: $(e)
-                        .find("div.item-summary > div.post-title.font-title > h3 > a")
-                        .text(),
-                    image_thumbnail: $(e)
-                        .find("div.item-thumb.c-image-hover > a > img")
-                        .attr("data-src"),
-                    href: $(e)
-                        .find("div.item-summary > div.post-title.font-title > h3 > a")
-                        .attr("href"),
-                });
-            });
-            const last_page = $("div.wp-pagenavi").find("a.last").attr("href");
+            const paramsSelector = {
+                cheerioApi: $,
+                wrapSelector: '#loop-content > div > div > div',
+                titleSelector: 'div.item-summary > div.post-title.font-title > h3 > a',
+                thumbnailSelector: 'div.item-thumb.c-image-hover > a > img',
+                thumbnailAttr: 'data-src',
+                hrefSelector: 'div.item-summary > div.post-title.font-title > h3 > a',
+            };
+            const data = yield (0, getListLatest_1.useGetDataItemsManga)(paramsSelector);
+            const last_page = $('div.wp-pagenavi').find('a.last').attr('href');
             const totalPage = Number(last_page !== undefined
                 ? last_page
                     .substring(0, last_page.length - 1)
-                    .split("/")
+                    .split('/')
                     .at(-1)
                 : page !== undefined
                     ? page
@@ -85,49 +82,49 @@ class Toonily {
     getDetailManga(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const $ = cheerio.load((yield axios_1.default.get(url)).data);
-            const site_content = $("div.site-content");
+            const site_content = $('div.site-content');
             const path = url.substring(this.baseUrl.length);
             const author = site_content
-                .find("div.summary-content > div.author-content > a")
+                .find('div.summary-content > div.author-content > a')
                 .text();
             const title = site_content
-                .find("div.post-content > div.post-title > h1")
+                .find('div.post-content > div.post-title > h1')
                 .text()
                 .trim();
             const status = site_content
-                .find("div.post-status > div.post-content_item > div.summary-content")
+                .find('div.post-status > div.post-content_item > div.summary-content')
                 .text()
                 .trim();
             const genres = [];
-            $("div.genres-content > a").each((_i, e) => {
+            $('div.genres-content > a').each((_i, e) => {
                 genres.push({
-                    url: $(e).attr("href"),
+                    url: $(e).attr('href'),
                     name: $(e).text(),
-                    path: $(e).attr("href").substring(this.baseUrl.length),
+                    path: $(e).attr('href').substring(this.baseUrl.length),
                 });
             });
             const views = site_content
-                .find("div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-content > div:nth-child(5) > div.summary-content")
+                .find('div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-content > div:nth-child(5) > div.summary-content')
                 .text()
-                .split("views")[0]
+                .split('views')[0]
                 .trim()
-                .split(" ")
+                .split(' ')
                 .at(-1);
-            const rate = site_content.find("#averagerate").text().trim();
-            const rate_number = site_content.find("#countrate").text();
+            const rate = site_content.find('#averagerate').text().trim();
+            const rate_number = site_content.find('#countrate').text();
             const follows = site_content
-                .find("div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-status > div.manga-action > div.add-bookmark > div.action_detail > span")
+                .find('div.profile-manga.summary-layout-1 > div > div > div > div.tab-summary > div.summary_content_wrap > div > div.post-status > div.manga-action > div.add-bookmark > div.action_detail > span')
                 .text()
-                .split(" ")[0];
+                .split(' ')[0];
             const chapters = [];
             site_content
-                .find("ul.main.version-chap.no-volumn > li.wp-manga-chapter")
+                .find('ul.main.version-chap.no-volumn > li.wp-manga-chapter')
                 .each((i, e) => {
                 chapters.push({
-                    url: $(e).find("a").attr("href"),
-                    path: $(e).find("a").attr("href").substring(this.baseUrl.length),
+                    url: $(e).find('a').attr('href'),
+                    path: $(e).find('a').attr('href').substring(this.baseUrl.length),
                     parent_href: url,
-                    title: $(e).find("a").text().trim(),
+                    title: $(e).find('a').text().trim(),
                 });
             });
             return {
@@ -148,45 +145,45 @@ class Toonily {
     getDataChapter(url_chapter, url, path, prev_chapter, next_chapter) {
         return __awaiter(this, void 0, void 0, function* () {
             const $ = cheerio.load((yield axios_1.default.get(url_chapter)).data);
-            const site_content = $("div.main-col-inner");
+            const site_content = $('div.main-col-inner');
             const title = site_content
-                .find("ol.breadcrumb > li:nth-child(3)")
+                .find('ol.breadcrumb > li:nth-child(3)')
                 .text()
                 .trim();
             const chapter_data = [];
             site_content
-                .find("div.entry-content div.reading-content > div.page-break > img")
+                .find('div.entry-content div.reading-content > div.page-break > img')
                 .each((i, e) => {
                 chapter_data.push({
                     _id: i,
-                    src_origin: $(e).attr("data-src").trim(),
-                    alt: $(e).attr("alt"),
+                    src_origin: $(e).attr('data-src').trim(),
+                    alt: $(e).attr('alt'),
                 });
             });
             const parent_href = site_content
-                .find("ol.breadcrumb > li:nth-child(3) > a")
-                .attr("href");
-            const next_chapter_data = site_content.find("div.nav-links > div.nav-next > a").length
+                .find('ol.breadcrumb > li:nth-child(3) > a')
+                .attr('href');
+            const next_chapter_data = site_content.find('div.nav-links > div.nav-next > a').length
                 ? {
                     url: site_content
-                        .find("div.nav-links > div.nav-next > a")
-                        .attr("href"),
+                        .find('div.nav-links > div.nav-next > a')
+                        .attr('href'),
                     path: site_content
-                        .find("div.nav-links > div.nav-next > a")
-                        .attr("href")
+                        .find('div.nav-links > div.nav-next > a')
+                        .attr('href')
                         .substring(this.baseUrl.length),
                     parent_href: parent_href,
                     title,
                 }
                 : null;
-            const prev_chapter_data = site_content.find("div.nav-links > div.nav-previous > a").length
+            const prev_chapter_data = site_content.find('div.nav-links > div.nav-previous > a').length
                 ? {
                     url: site_content
-                        .find("div.nav-links > div.nav-previous > a")
-                        .attr("href"),
+                        .find('div.nav-links > div.nav-previous > a')
+                        .attr('href'),
                     path: site_content
-                        .find("div.nav-links > div.nav-previous > a")
-                        .attr("href")
+                        .find('div.nav-links > div.nav-previous > a')
+                        .attr('href')
                         .substring(this.baseUrl.length),
                     parent_href: parent_href,
                     title,
@@ -204,30 +201,30 @@ class Toonily {
     }
     search(keyword, page) {
         return __awaiter(this, void 0, void 0, function* () {
-            keyword = keyword.replace(/\s/g, "-");
+            keyword = keyword.replace(/\s/g, '-');
             const axios_get = yield axios_1.default.get(`${this.baseUrl}/search/${keyword}${page !== undefined && page > 1 ? `/page/${page}` : ``}`);
             const $ = cheerio.load(axios_get.data);
-            const wrap_items = $("div.page-listing-item > div.row.row-eq-height > div > div");
+            const wrap_items = $('div.page-listing-item > div.row.row-eq-height > div > div');
             const data = [];
             wrap_items.each((i, e) => {
                 data.push({
                     _id: i,
                     title: $(e)
-                        .find("div.item-summary > div.post-title.font-title > h3 > a")
+                        .find('div.item-summary > div.post-title.font-title > h3 > a')
                         .text(),
                     image_thumbnail: $(e)
-                        .find("div.item-thumb.c-image-hover > a > img")
-                        .attr("data-src"),
+                        .find('div.item-thumb.c-image-hover > a > img')
+                        .attr('data-src'),
                     href: $(e)
-                        .find("div.item-summary > div.post-title.font-title > h3 > a")
-                        .attr("href"),
+                        .find('div.item-summary > div.post-title.font-title > h3 > a')
+                        .attr('href'),
                 });
             });
-            const last_page = $("div.wp-pagenavi").find("a.last").attr("href");
+            const last_page = $('div.wp-pagenavi').find('a.last').attr('href');
             const totalPage = Number(last_page !== undefined
                 ? last_page
                     .substring(0, last_page.length - 1)
-                    .split("/")
+                    .split('/')
                     .at(-1)
                 : page !== undefined
                     ? page

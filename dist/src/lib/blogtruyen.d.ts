@@ -1,7 +1,7 @@
 import { Browser } from 'puppeteer';
 import { AbstractMangaFactory, chapter, genre, responseChapter, responseDetailManga, responseListManga } from '../types/type';
 import { NETTRUYEN_SORT_FILTER, NETTRUYEN_STATUS_FILTER } from '../constants/filter';
-export declare class Nettruyen implements AbstractMangaFactory {
+export declare class Blogtruyen implements AbstractMangaFactory {
     baseUrl: string;
     all_genres: genre[];
     browser: Promise<Browser>;

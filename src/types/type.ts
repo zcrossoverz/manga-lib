@@ -91,9 +91,3 @@ export interface AbstractMangaFactory {
 
   search(keyword: string, page?: number): Promise<responseListManga>;
 }
-
-// export declare class Manga {
-//   constructor() {}
-
-//   build(type: MangaType, params?: constructorParams): AbstractMangaFactory;
-// }

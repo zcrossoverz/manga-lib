@@ -1,9 +1,9 @@
-import { Browser } from "puppeteer";
+import { Browser } from 'puppeteer';
 export type responseListManga = {
     totalData: number;
     canNext: boolean;
     canPrev: boolean;
-    totalPage: number;
+    totalPage?: number;
     currentPage: number;
     data: {
         _id: number;
@@ -32,10 +32,10 @@ export type responseDetailManga = {
     title: string;
     status: string;
     genres: genre[];
-    views: string;
-    rate: string;
-    rate_number: string;
-    follows: string;
+    views?: string;
+    rate?: string;
+    rate_number?: string;
+    follows?: string;
     chapters: chapter[];
 };
 export type image_chapter = {
@@ -45,8 +45,8 @@ export type image_chapter = {
     alt: string;
 };
 export type responseChapter = {
-    url: string;
-    path: string;
+    url?: string;
+    path?: string;
     title: string;
     chapter_data: image_chapter[];
     prev_chapter: chapter | null;
@@ -62,5 +62,6 @@ export interface AbstractMangaFactory {
     getListLatestUpdate(page?: number): Promise<responseListManga>;
     getDetailManga(url: string): Promise<responseDetailManga>;
     getDataChapter(url_chapter: string, url?: string, path?: string, prev_chapter?: chapter, next_chapter?: chapter): Promise<responseChapter>;
+    getListByGenre(genre: genre, page?: number, status?: any, sort?: any): Promise<responseListManga>;
     search(keyword: string, page?: number): Promise<responseListManga>;
 }

@@ -43,9 +43,5 @@ import { Manga, MangaType } from './src';
 const t = new Manga().build(MangaType.BLOGTRUYEN);
 
 void (async () => {
-    console.log(
-        await t.getDetailManga(
-            'https://blogtruyen.vn/30958/thanh-nu-xin-hay-dung-ngay-nhung-tro-quai-dan-cua-co-di'
-        )
-    );
+  console.log(await t.getListLatestUpdate());
 })();
