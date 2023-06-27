@@ -33,7 +33,13 @@ export class Manga {
             : "https://www.asurascans.com"
         );
       }
-
+      case MangaType.BLOGTRUYEN: {
+        return new AsuraScans(
+          params !== undefined && params.baseUrl !== undefined
+            ? params.baseUrl
+            : "https://blogtruyen.vn"
+        );
+      }
       default: {
         return new Nettruyen("https://www.nettruyenmax.com");
       }
