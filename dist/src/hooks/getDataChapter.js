@@ -53,7 +53,6 @@ const useGetDataChapter = (params) => __awaiter(void 0, void 0, void 0, function
                 .$eval(nextChapterSelector, (el) => {
                 return {
                     url_chapter: el.getAttribute('href'),
-                    t: el.outerHTML,
                 };
             })
                 .catch(() => null);

@@ -35,59 +35,40 @@ class AsuraScans {
                 else
                     req.continue();
             });
-            yield _page.goto(`${this.baseUrl}/tim-truyen?keyword=${keyword}${page > 1 ? `&page=${page}` : ``}`);
-            const element = yield _page.$$('#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure');
-            const is_multipage = yield _page
-                .$eval('#ctl00_mainContent_ctl01_divPager', () => true)
+            yield _page.goto(`${this.baseUrl}${page > 1 ? `/page/${page}` : ``}/?s=${keyword}`);
+            const paramsSelector = {
+                puppeteer: _page,
+                wrapSelector: 'div.listupd > div.bs > div.bsx',
+                titleSelector: 'a > div.bigor > div.tt',
+                thumbnailSelector: 'a > div.limit > img',
+                thumbnailAttr: 'src',
+                hrefSelector: 'a',
+            };
+            const data = yield (0, getListLatest_1.useGetDataItemsManga)(paramsSelector);
+            const canNext = yield _page
+                .$eval('div.pagination > a.next.page-numbers', () => true)
                 .catch(() => false);
-            const canNext = is_multipage
-                ? yield _page
-                    .$eval('#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page', () => true)
-                    .catch(() => false)
-                : false;
-            const canPrev = is_multipage
-                ? yield _page
-                    .$eval('#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page', () => true)
-                    .catch(() => false)
-                : false;
-            const totalPage = is_multipage
-                ? parseInt((0, validate_1.not_null)(yield _page.$eval('#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a', (el) => el.getAttribute('href'))).split('page=')[1])
+            const canPrev = yield _page
+                .$eval('div.pagination > a.prev.page-numbers', () => true)
+                .catch(() => false);
+            const totalPages = yield _page.$$('div.pagination > a.page-numbers:not(.prev):not(.next)');
+            const totalPage = totalPages !== undefined
+                ? Number(yield totalPages[totalPages.length - 1].evaluate((el) => el.textContent))
                 : 0;
             return {
-                totalData: element.length,
+                totalData: data.length,
                 totalPage,
                 currentPage: page !== undefined ? page : 1,
                 canNext,
                 canPrev,
-                data: yield Promise.all(element.map((e, i) => __awaiter(this, void 0, void 0, function* () {
-                    const href = (0, validate_1.not_null)(yield e.$eval('div.image > a', (el) => el.getAttribute('href')));
-                    const title = (0, validate_1.not_null)(yield e.$eval('figcaption > h3 > a', (el) => el.textContent));
-                    const image_thumbnail = (0, validate_1.not_null)(yield e.$eval('div.image > a > img', (el) => el.getAttribute('data-original')));
-                    return {
-                        _id: i,
-                        title,
-                        image_thumbnail: image_thumbnail.startsWith('//')
-                            ? `https:${image_thumbnail}`
-                            : image_thumbnail,
-                        href,
-                    };
-                }))),
+                data,
             };
         });
     }
     getListByGenre(genre, page, status, sort) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
-            let path = genre.path;
-            if (sort !== undefined) {
-                path += `?sort=${sort}${status !== undefined ? `&status=${status}` : '&status=-1'}${page !== undefined ? `&page=${page}` : ''}`;
-            }
-            else if (status !== undefined) {
-                path += `?status=${status}${page !== undefined ? `&page=${page}` : ''}`;
-            }
-            else if (page !== undefined) {
-                path += `?page=${page}`;
-            }
+            const url = `${this.baseUrl}${genre.path}${page !== undefined && page > 1 ? `/page/${page}` : ``}`;
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -95,34 +76,33 @@ class AsuraScans {
                 else
                     req.continue();
             });
-            yield _page.goto(`${this.baseUrl}${path}`);
-            const element = yield _page.$$('#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure');
+            yield _page.goto(url);
+            const paramsSelector = {
+                puppeteer: _page,
+                wrapSelector: 'div.listupd > div.bs > div.bsx',
+                titleSelector: 'a > div.bigor > div.tt',
+                thumbnailSelector: 'a > div.limit > img',
+                thumbnailAttr: 'src',
+                hrefSelector: 'a',
+            };
+            const data = yield (0, getListLatest_1.useGetDataItemsManga)(paramsSelector);
             const canNext = yield _page
-                .$eval('#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page', () => true)
+                .$eval('div.pagination > a.next.page-numbers', () => true)
                 .catch(() => false);
             const canPrev = yield _page
-                .$eval('#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page', () => true)
+                .$eval('div.pagination > a.prev.page-numbers', () => true)
                 .catch(() => false);
-            const totalPage = parseInt((0, validate_1.not_null)(yield _page.$eval('#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a', (el) => el.getAttribute('href'))).split('page=')[1]);
+            const totalPages = yield _page.$$('div.pagination > a.page-numbers:not(.prev):not(.next)');
+            const totalPage = totalPages !== undefined
+                ? Number(yield totalPages[totalPages.length - 1].evaluate((el) => el.textContent))
+                : 0;
             return {
-                totalData: element.length,
+                totalData: data.length,
                 totalPage,
                 currentPage: page !== undefined ? page : 1,
                 canNext,
                 canPrev,
-                data: yield Promise.all(element.map((e, i) => __awaiter(this, void 0, void 0, function* () {
-                    const href = (0, validate_1.not_null)(yield e.$eval('div.image > a', (el) => el.getAttribute('href')));
-                    const title = (0, validate_1.not_null)(yield e.$eval('figcaption > h3 > a', (el) => el.textContent));
-                    const image_thumbnail = (0, validate_1.not_null)(yield e.$eval('div.image > a > img', (el) => el.getAttribute('data-original')));
-                    return {
-                        _id: i,
-                        title,
-                        image_thumbnail: image_thumbnail.startsWith('//')
-                            ? `https:${image_thumbnail}`
-                            : image_thumbnail,
-                        href,
-                    };
-                }))),
+                data,
             };
         });
     }
@@ -143,13 +123,29 @@ class AsuraScans {
                 titleSelector: 'div.headpost > h1',
                 imageSelectorAll: 'div#readerarea > p > img',
                 originImageAttr: 'src',
-                prevChapterSelector: '.amob > .npv.r > div.nextprev > a.ch-prev-btn',
-                nextChapterSelector: '.amob > .npv.r > div.nextprev > a.ch-next-btn',
+                prevChapterSelector: '.navlef > .npv.r > div.nextprev > a.ch-prev-btn',
+                nextChapterSelector: '.navlef > .npv.r > div.nextprev > a.ch-next-btn',
                 baseUrl: this.baseUrl,
                 url: url_chapter,
             };
             const data = yield (0, getDataChapter_1.useGetDataChapter)(paramsSelector);
-            return Object.assign(Object.assign(Object.assign({}, (url !== undefined ? { url } : {})), (path !== undefined ? { path } : {})), data);
+            const scripts = yield _page.$$('script');
+            const script = yield scripts[18].evaluate((e) => {
+                return JSON.parse(e.textContent.split('ts_reader.run(')[1].split(');')[0]);
+            });
+            return Object.assign(Object.assign(Object.assign(Object.assign({}, (url !== undefined ? { url } : {})), (path !== undefined ? { path } : {})), data), { next_chapter: script.nextUrl !== ''
+                    ? {
+                        url: script.nextUrl,
+                        parent_href: url !== undefined ? url : '',
+                        path: script.nextUrl.substring(`${this.baseUrl}`.length),
+                    }
+                    : null, prev_chapter: script.prevUrl !== ''
+                    ? {
+                        url: script.prevUrl,
+                        parent_href: url !== undefined ? url : '',
+                        path: script.prevUrl.substring(`${this.baseUrl}`.length),
+                    }
+                    : null });
         });
     }
     getDetailManga(url) {

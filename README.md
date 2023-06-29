@@ -62,7 +62,7 @@ The manga-lib currently supports the following manga websites (updating):
 
 - blogtruyen
 
-- asurascans (in progress)
+- asurascans
 
 ## Contributing
 

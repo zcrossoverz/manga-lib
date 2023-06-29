@@ -28,7 +28,9 @@ const useGetDataItemsManga = (params) => __awaiter(void 0, void 0, void 0, funct
     else {
         const wrapItems = yield puppeteer.$$(wrapSelector);
         data = yield Promise.all(wrapItems.map((e, i) => __awaiter(void 0, void 0, void 0, function* () {
-            const image_thumbnail = yield e.$eval(thumbnailSelector, (el) => el.getAttribute(`${thumbnailAttr}`));
+            const image_thumbnail = yield (yield e.$(thumbnailSelector)).evaluate((el, thumbnailAttr) => {
+                return el.getAttribute(thumbnailAttr);
+            }, thumbnailAttr);
             const { href } = yield e.$eval(hrefSelector, (el) => {
                 return {
                     href: el.getAttribute('href'),
@@ -41,7 +43,7 @@ const useGetDataItemsManga = (params) => __awaiter(void 0, void 0, void 0, funct
             });
             return {
                 _id: i,
-                title: (0, validate_1.not_null)(title),
+                title: (0, validate_1.not_null)(title).trim().replace(/\n/, ''),
                 href: (0, validate_1.not_null)(href),
                 image_thumbnail: image_thumbnail.startsWith('//')
                     ? `https:${image_thumbnail}`
