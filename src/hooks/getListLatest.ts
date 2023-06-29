@@ -53,12 +53,14 @@ export const useGetDataItemsManga = async (
     });
   } else {
     const wrapItems = await puppeteer!.$$(wrapSelector);
+
     data = await Promise.all(
       wrapItems.map(async (e, i) => {
-        const image_thumbnail: string = await e.$eval(
-          thumbnailSelector,
-          (el) => el.getAttribute(`${thumbnailAttr}`)!
-        );
+        const image_thumbnail: string = await (await e.$(
+          thumbnailSelector
+        ))!.evaluate((el, thumbnailAttr) => {
+          return el.getAttribute(thumbnailAttr)!;
+        }, thumbnailAttr);
 
         const { href } = await e.$eval(hrefSelector, (el) => {
           return {
@@ -74,7 +76,7 @@ export const useGetDataItemsManga = async (
 
         return {
           _id: i,
-          title: not_null(title),
+          title: not_null(title).trim().replace(/\n/, ''),
           href: not_null(href),
           image_thumbnail: image_thumbnail.startsWith('//')
             ? `https:${image_thumbnail}`

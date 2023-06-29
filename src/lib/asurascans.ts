@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -11,10 +16,6 @@ import {
   responseListManga,
 } from '../types/type';
 import { not_null } from '../utils/validate';
-import {
-  NETTRUYEN_SORT_FILTER,
-  NETTRUYEN_STATUS_FILTER,
-} from '../constants/filter';
 import { useGetDataItemsManga } from '../hooks/getListLatest';
 import { useGetDataChapter } from '../hooks/getDataChapter';
 
@@ -39,163 +40,105 @@ export class AsuraScans implements AbstractMangaFactory {
       else req.continue();
     });
     await _page.goto(
-      `${this.baseUrl}/tim-truyen?keyword=${keyword}${
-        page > 1 ? `&page=${page}` : ``
-      }`
+      `${this.baseUrl}${page > 1 ? `/page/${page}` : ``}/?s=${keyword}`
     );
 
-    const element = await _page.$$(
-      '#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure'
-    );
+    const paramsSelector = {
+      puppeteer: _page,
+      wrapSelector: 'div.listupd > div.bs > div.bsx',
+      titleSelector: 'a > div.bigor > div.tt',
+      thumbnailSelector: 'a > div.limit > img',
+      thumbnailAttr: 'src',
+      hrefSelector: 'a',
+    };
 
-    const is_multipage = await _page
-      .$eval('#ctl00_mainContent_ctl01_divPager', () => true)
+    const data = await useGetDataItemsManga(paramsSelector);
+
+    const canNext = await _page
+      .$eval('div.pagination > a.next.page-numbers', () => true)
       .catch(() => false);
 
-    const canNext = is_multipage
-      ? await _page
-          .$eval(
-            '#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page',
-            () => true
-          )
-          .catch(() => false)
-      : false;
+    const canPrev = await _page
+      .$eval('div.pagination > a.prev.page-numbers', () => true)
+      .catch(() => false);
 
-    const canPrev = is_multipage
-      ? await _page
-          .$eval(
-            '#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page',
-            () => true
-          )
-          .catch(() => false)
-      : false;
+    const totalPages = await _page.$$(
+      'div.pagination > a.page-numbers:not(.prev):not(.next)'
+    );
 
-    const totalPage = is_multipage
-      ? parseInt(
-          not_null(
-            await _page.$eval(
-              '#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a',
-              (el) => el.getAttribute('href')
+    const totalPage =
+      totalPages !== undefined
+        ? Number(
+            await totalPages[totalPages.length - 1].evaluate(
+              (el) => el.textContent!
             )
-          ).split('page=')[1]
-        )
-      : 0;
-
+          )
+        : 0;
     return {
-      totalData: element.length,
+      totalData: data.length,
       totalPage,
       currentPage: page !== undefined ? page : 1,
       canNext,
       canPrev,
-      data: await Promise.all(
-        element.map(async (e, i) => {
-          const href = not_null(
-            await e.$eval('div.image > a', (el) => el.getAttribute('href'))
-          );
-
-          const title = not_null(
-            await e.$eval('figcaption > h3 > a', (el) => el.textContent)
-          );
-
-          const image_thumbnail = not_null(
-            await e.$eval('div.image > a > img', (el) =>
-              el.getAttribute('data-original')
-            )
-          );
-          return {
-            _id: i,
-            title,
-            image_thumbnail: image_thumbnail.startsWith('//')
-              ? `https:${image_thumbnail}`
-              : image_thumbnail,
-            href,
-          };
-        })
-      ),
+      data,
     };
   }
 
   async getListByGenre(
     genre: genre,
     page?: number,
-    status?: NETTRUYEN_STATUS_FILTER,
-    sort?: NETTRUYEN_SORT_FILTER
+    status?: any,
+    sort?: any
   ): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
-    let path = genre.path;
-    if (sort !== undefined) {
-      path += `?sort=${sort}${
-        status !== undefined ? `&status=${status}` : '&status=-1'
-      }${page !== undefined ? `&page=${page}` : ''}`;
-    } else if (status !== undefined) {
-      path += `?status=${status}${page !== undefined ? `&page=${page}` : ''}`;
-    } else if (page !== undefined) {
-      path += `?page=${page}`;
-    }
+    const url = `${this.baseUrl}${genre.path}${
+      page !== undefined && page > 1 ? `/page/${page}` : ``
+    }`;
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
       else req.continue();
     });
-    await _page.goto(`${this.baseUrl}${path}`);
-    const element = await _page.$$(
-      '#ctl00_divCenter > div.Module.Module-170 > div > div.items > div > div.item > figure'
-    );
+    await _page.goto(url);
+    const paramsSelector = {
+      puppeteer: _page,
+      wrapSelector: 'div.listupd > div.bs > div.bsx',
+      titleSelector: 'a > div.bigor > div.tt',
+      thumbnailSelector: 'a > div.limit > img',
+      thumbnailAttr: 'src',
+      hrefSelector: 'a',
+    };
+
+    const data = await useGetDataItemsManga(paramsSelector);
 
     const canNext = await _page
-      .$eval(
-        '#ctl00_mainContent_ctl01_divPager > ul > li > a.next-page',
-        () => true
-      )
+      .$eval('div.pagination > a.next.page-numbers', () => true)
       .catch(() => false);
 
     const canPrev = await _page
-      .$eval(
-        '#ctl00_mainContent_ctl01_divPager > ul > li > a.prev-page',
-        () => true
-      )
+      .$eval('div.pagination > a.prev.page-numbers', () => true)
       .catch(() => false);
 
-    const totalPage = parseInt(
-      not_null(
-        await _page.$eval(
-          '#ctl00_mainContent_ctl01_divPager > ul > li:last-child > a',
-          (el) => el.getAttribute('href')
-        )
-      ).split('page=')[1]
+    const totalPages = await _page.$$(
+      'div.pagination > a.page-numbers:not(.prev):not(.next)'
     );
 
+    const totalPage =
+      totalPages !== undefined
+        ? Number(
+            await totalPages[totalPages.length - 1].evaluate(
+              (el) => el.textContent!
+            )
+          )
+        : 0;
+
     return {
-      totalData: element.length,
+      totalData: data.length,
       totalPage,
       currentPage: page !== undefined ? page : 1,
       canNext,
       canPrev,
-      data: await Promise.all(
-        element.map(async (e, i) => {
-          const href = not_null(
-            await e.$eval('div.image > a', (el) => el.getAttribute('href'))
-          );
-
-          const title = not_null(
-            await e.$eval('figcaption > h3 > a', (el) => el.textContent)
-          );
-
-          const image_thumbnail = not_null(
-            await e.$eval('div.image > a > img', (el) =>
-              el.getAttribute('data-original')
-            )
-          );
-          return {
-            _id: i,
-            title,
-            image_thumbnail: image_thumbnail.startsWith('//')
-              ? `https:${image_thumbnail}`
-              : image_thumbnail,
-            href,
-          };
-        })
-      ),
+      data,
     };
   }
 
@@ -220,18 +163,41 @@ export class AsuraScans implements AbstractMangaFactory {
       titleSelector: 'div.headpost > h1',
       imageSelectorAll: 'div#readerarea > p > img',
       originImageAttr: 'src',
-      prevChapterSelector: '.amob > .npv.r > div.nextprev > a.ch-prev-btn',
-      nextChapterSelector: '.amob > .npv.r > div.nextprev > a.ch-next-btn',
+      prevChapterSelector: '.navlef > .npv.r > div.nextprev > a.ch-prev-btn',
+      nextChapterSelector: '.navlef > .npv.r > div.nextprev > a.ch-next-btn',
       baseUrl: this.baseUrl,
       url: url_chapter,
     };
 
     const data = await useGetDataChapter(paramsSelector);
 
+    const scripts = await _page.$$('script');
+    const script = await scripts[18].evaluate((e) => {
+      return JSON.parse(
+        e.textContent!.split('ts_reader.run(')[1].split(');')[0]
+      );
+    });
+
     return {
       ...(url !== undefined ? { url } : {}),
       ...(path !== undefined ? { path } : {}),
       ...data,
+      next_chapter:
+        script.nextUrl !== ''
+          ? {
+              url: script.nextUrl,
+              parent_href: url !== undefined ? url : '',
+              path: script.nextUrl.substring(`${this.baseUrl}`.length),
+            }
+          : null,
+      prev_chapter:
+        script.prevUrl !== ''
+          ? {
+              url: script.prevUrl,
+              parent_href: url !== undefined ? url : '',
+              path: script.prevUrl.substring(`${this.baseUrl}`.length),
+            }
+          : null,
     };
   }
 

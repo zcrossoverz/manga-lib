@@ -105,7 +105,6 @@ export const useGetDataChapter = async (
         .$eval(nextChapterSelector, (el) => {
           return {
             url_chapter: el.getAttribute('href'),
-            t: el.outerHTML,
           };
         })
         .catch(() => null);
