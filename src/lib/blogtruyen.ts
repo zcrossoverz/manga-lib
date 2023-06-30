@@ -148,11 +148,6 @@ export class Blogtruyen implements AbstractMangaFactory {
     path = path !== undefined ? path : '';
 
     const _page = await (await this.browser).newPage();
-    await _page.setRequestInterception(true);
-    _page.on('request', (req) => {
-      if (req.resourceType() !== 'document') req.abort();
-      else req.continue();
-    });
     await _page.goto(url_chapter);
     const content = await _page.$('#readonline > section');
     const title = not_null(
@@ -291,10 +286,6 @@ export class Blogtruyen implements AbstractMangaFactory {
         };
       })
     );
-
-    const rate = 'N|A';
-
-    const rate_number = 'N|A';
     const follows = not_null(
       await content!.$eval('#LikeCount', (el) => el.textContent)
     );
@@ -306,8 +297,6 @@ export class Blogtruyen implements AbstractMangaFactory {
       status: not_null(status).trim(),
       genres,
       views: not_null(views),
-      rate,
-      rate_number,
       follows,
       chapters,
     };
@@ -356,7 +345,7 @@ export class Blogtruyen implements AbstractMangaFactory {
           return {
             _id: i,
             title: not_null(link.title),
-            href: 'https://blogtruyen.vn' + not_null(link.href),
+            href: this.baseUrl + not_null(link.href),
             image_thumbnail: image_thumbnail.startsWith('//')
               ? `https:${image_thumbnail}`
               : image_thumbnail,
