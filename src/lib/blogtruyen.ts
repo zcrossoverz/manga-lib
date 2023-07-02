@@ -309,8 +309,7 @@ export class Blogtruyen implements AbstractMangaFactory {
       if (req.resourceType() !== 'document') req.abort();
       else req.continue();
     });
-    await _page.goto(`${this.baseUrl}${page > 1 ? `/?page=${page}` : ``}`);
-
+    await _page.goto(`${this.baseUrl}${page > 1 ? `/page-${page}` :``}`);
     const element = await _page.$$(
       '#wrapper > section.main-content > div > div:nth-child(1) > section.list-mainpage > div:nth-child(1) > div > div'
     );
