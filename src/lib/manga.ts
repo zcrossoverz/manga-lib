@@ -5,7 +5,7 @@ import { AbstractMangaFactory, constructorParams } from '../types/type';
 import { AsuraScans } from './asurascans';
 import { Blogtruyen } from './blogtruyen';
 import { Toonily } from './toonily';
-
+import { Mangadex } from './mangadex';
 export class Manga {
   constructor() {}
 
@@ -40,6 +40,13 @@ export class Manga {
             ? params.baseUrl
             : 'https://blogtruyen.vn'
         );
+      }
+      case MangaType.MANGADEX: {
+        return new Mangadex(
+          params !== undefined && params.baseUrl !== undefined
+            ? params.baseUrl
+            : 'https://mangadex.org'
+        )
       }
       default: {
         return new Nettruyen('https://www.nettruyenmax.com');
