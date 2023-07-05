@@ -2,5 +2,6 @@ export enum MangaType {
   NETTRUYEN = "nettruyen",
   TOONILY = "toonily",
   ASURASCANS = "asurascans",
-  BLOGTRUYEN = "blogtruyen"
+  BLOGTRUYEN = "blogtruyen",
+  MANGADEX = "mangadex"
 }
