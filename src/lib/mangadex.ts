@@ -28,35 +28,32 @@ export class Mangadex implements AbstractMangaFactory {
   async getListLatestUpdate(
     page?: number | undefined
   ): Promise<responseListManga> {
-    let totalData = 0
-    let data :{
-    _id: number;
-    image_thumbnail: string;
-    title: string;
-    href: string;
-  }[] = [];
+    let totalData = 0;
+    let data: {
+      _id: number;
+      image_thumbnail: string;
+      title: string;
+      href: string;
+    }[] = [];
     let offset = 0;
-    if(page != undefined)
-      if(page >= 0 && page <= 9983)
-      offset = page
-      else throw new Error("Offset is out of bound")
+    if (page != undefined)
+      if (page >= 0 && page <= 9983) offset = page;
+      else throw new Error('Offset is out of bound');
     await axios
       .get(
-      `https://api.mangadex.org/manga?limit=16&offset=${offset}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
+        `https://api.mangadex.org/manga?limit=16&offset=${offset}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
       )
       .then(function (response) {
         const listLatestUpdate = response.data.data;
-        totalData = response.data.total
-        data = listLatestUpdate.map((e:any, i:any) =>
-        {   
-            return {
-
-              _id: offset + i,
-              title: e.attributes.title.en,
-              href: `/${e.id}`,
-              image_thumbnail: "not implemented"
-            }
-          })
+        totalData = response.data.total;
+        data = listLatestUpdate.map((e: any, i: any) => {
+          return {
+            _id: offset + i,
+            title: e.attributes.title.en,
+            href: `/${e.id}`,
+            image_thumbnail: 'not implemented',
+          };
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -68,8 +65,8 @@ export class Mangadex implements AbstractMangaFactory {
       totalPage: 2,
       currentPage: 2,
       data,
+    };
   }
-}
   async getDetailManga(url: string): Promise<responseDetailManga> {
     const sourceId = url;
     let author = 'null';
@@ -86,15 +83,13 @@ export class Mangadex implements AbstractMangaFactory {
         author = infoData.relationships[0].attributes.name;
         title = infoData.attributes.title.en;
         status = infoData.attributes.status;
-        infoData.attributes.tags.map(
-          (e:any) => {
-            genres.push({
+        infoData.attributes.tags.map((e: any) => {
+          genres.push({
             url: `https://mangadex.org/tag/` + e.id,
             name: e.attributes.name.en,
             path: '/tag/' + e.id,
-            })
-          }
-        )
+          });
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -107,16 +102,14 @@ export class Mangadex implements AbstractMangaFactory {
       )
       .then(function (response) {
         const chapterData = response.data.data;
-        chapterData.map(
-          (e:any) => {
-            chapters.push({
-              path: '/' + e.id,
-              url: `https://mangadex.org/chapter/${e.id}`,
-              parent_href: '/chapter/' + e.id,
-              title: e.attributes.title,
-            })
-          }
-        )
+        chapterData.map((e: any) => {
+          chapters.push({
+            path: '/' + e.id,
+            url: `https://mangadex.org/chapter/${e.id}`,
+            parent_href: '/chapter/' + e.id,
+            title: e.attributes.title,
+          });
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -166,15 +159,13 @@ export class Mangadex implements AbstractMangaFactory {
       )
       .then(function (response) {
         const hash = response.data.chapter.hash;
-        response.data.chapter.data.map(
-          (e:any, i: number) => {
-            chapter_data.push({
-               _id: i,
-              src_origin: `https://uploads.mangadex.org/data/${hash}/${response.data.chapter.data[i]}`,
-              alt: title + ' id: ' + i,            
-            })
-          }
-        )
+        response.data.chapter.data.map((e: any, i: number) => {
+          chapter_data.push({
+            _id: i,
+            src_origin: `https://uploads.mangadex.org/data/${hash}/${response.data.chapter.data[i]}`,
+            alt: title + ' id: ' + i,
+          });
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -193,36 +184,33 @@ export class Mangadex implements AbstractMangaFactory {
     keyword: string,
     page?: number | undefined
   ): Promise<responseListManga> {
-    let totalData = 0
-    let data :{
-    _id: number;
-    image_thumbnail: string;
-    title: string;
-    href: string;
-  }[] = [];
+    let totalData = 0;
+    let data: {
+      _id: number;
+      image_thumbnail: string;
+      title: string;
+      href: string;
+    }[] = [];
     let offset = 0;
-    if(page != undefined)
-      if(page >= 0 && page <= 9983)
-        offset = page
-      else throw new Error('Offset is out of bound')
+    if (page != undefined)
+      if (page >= 0 && page <= 9983) offset = page;
+      else throw new Error('Offset is out of bound');
     await axios
       .get(
-      `https://api.mangadex.org/manga?limit=10&offset=${offset}&includes[]=cover_art&includes[]=artist&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&title=${keyword}&order[relevance]=desc`
+        `https://api.mangadex.org/manga?limit=10&offset=${offset}&includes[]=cover_art&includes[]=artist&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&title=${keyword}&order[relevance]=desc`
       )
       .then(function (response) {
-        totalData = response.data.total
+        totalData = response.data.total;
         const listLatestUpdate = response.data.data;
-        totalData = response.data.total
-        data = listLatestUpdate.map((e:any, i:any) =>
-        {   
-            return {
-
-              _id: i,
-              title: e.attributes.title.en,
-              href: e.id,
-              image_thumbnail: "not implemented"
-            }
-          })
+        totalData = response.data.total;
+        data = listLatestUpdate.map((e: any, i: any) => {
+          return {
+            _id: i,
+            title: e.attributes.title.en,
+            href: e.id,
+            image_thumbnail: 'not implemented',
+          };
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -234,6 +222,6 @@ export class Mangadex implements AbstractMangaFactory {
       totalPage: 2,
       currentPage: 2,
       data,
-    }
+    };
   }
 }
