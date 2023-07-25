@@ -28,8 +28,48 @@ export class Mangadex implements AbstractMangaFactory {
   async getListLatestUpdate(
     page?: number | undefined
   ): Promise<responseListManga> {
-    throw new Error('Method not implemented');
+    let totalData = 0
+    let data :{
+    _id: number;
+    image_thumbnail: string;
+    title: string;
+    href: string;
+  }[] = [];
+    let offset = 0;
+    if(page != undefined)
+      if(page >= 0 && page <= 9983)
+      offset = page
+      else throw new Error("Offset is out of bound")
+    await axios
+      .get(
+      `https://api.mangadex.org/manga?limit=16&offset=${offset}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
+      )
+      .then(function (response) {
+        const listLatestUpdate = response.data.data;
+        totalData = response.data.total
+        data = listLatestUpdate.map((e:any, i:any) =>
+        {   
+            return {
+
+              _id: offset + i,
+              title: e.attributes.title.en,
+              href: `/${e.id}`,
+              image_thumbnail: "not implemented"
+            }
+          })
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    return {
+      totalData,
+      canNext: true,
+      canPrev: false,
+      totalPage: 2,
+      currentPage: 2,
+      data,
   }
+}
   async getDetailManga(url: string): Promise<responseDetailManga> {
     const sourceId = url;
     let author = 'null';
@@ -145,6 +185,47 @@ export class Mangadex implements AbstractMangaFactory {
     keyword: string,
     page?: number | undefined
   ): Promise<responseListManga> {
-    throw new Error('Method not implemented');
+    let totalData = 0
+    let data :{
+    _id: number;
+    image_thumbnail: string;
+    title: string;
+    href: string;
+  }[] = [];
+    let offset = 0;
+    if(page != undefined)
+      if(page >= 0 && page <= 9983)
+        offset = page
+      else throw new Error('Offset is out of bound')
+    await axios
+      .get(
+      `https://api.mangadex.org/manga?limit=10&offset=${offset}&includes[]=cover_art&includes[]=artist&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&title=${keyword}&order[relevance]=desc`
+      )
+      .then(function (response) {
+        totalData = response.data.total
+        const listLatestUpdate = response.data.data;
+        totalData = response.data.total
+        data = listLatestUpdate.map((e:any, i:any) =>
+        {   
+            return {
+
+              _id: i,
+              title: e.attributes.title.en,
+              href: e.id,
+              image_thumbnail: "not implemented"
+            }
+          })
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    return {
+      totalData,
+      canNext: true,
+      canPrev: false,
+      totalPage: 2,
+      currentPage: 2,
+      data,
+    }
   }
 }
