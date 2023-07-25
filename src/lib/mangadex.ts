@@ -86,31 +86,37 @@ export class Mangadex implements AbstractMangaFactory {
         author = infoData.relationships[0].attributes.name;
         title = infoData.attributes.title.en;
         status = infoData.attributes.status;
-        for (let i = 0; i < response.data.data.attributes.tags.length; i++)
-          genres.push({
-            url: `https://mangadex.org/tag/` + infoData.attributes.tags[i].id,
-            name: infoData.attributes.tags[i].attributes.name.en,
-            path: '/tag/' + infoData.attributes.tags[i].id,
-          });
+        infoData.attributes.tags.map(
+          (e:any) => {
+            genres.push({
+            url: `https://mangadex.org/tag/` + e.id,
+            name: e.attributes.name.en,
+            path: '/tag/' + e.id,
+            })
+          }
+        )
       })
       .catch(function (error) {
         console.log(error);
       });
     //Get info Manga Chapter
-    let chapters: chapter[] = [] as chapter[];
+    const chapters: chapter[] = [] as chapter[];
     await axios
       .get(
         `https://api.mangadex.org/manga/${sourceId}/feed?translatedLanguage[]=en&includes[]=scanlation_group&&includes[]=user&order[volume]=desc&order[chapter]=desc&offset=0&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
       )
       .then(function (response) {
         const chapterData = response.data.data;
-        for (let i = 0; i < chapterData.length; i++)
-          chapters.push({
-            path: '/' + chapterData[i].id,
-            url: `https://mangadex.org/chapter/${chapterData[i].id}`,
-            parent_href: '/chapter/' + chapterData[i].id,
-            title: chapterData[i].attributes.title,
-          });
+        chapterData.map(
+          (e:any) => {
+            chapters.push({
+              path: '/' + e.id,
+              url: `https://mangadex.org/chapter/${e.id}`,
+              parent_href: '/chapter/' + e.id,
+              title: e.attributes.title,
+            })
+          }
+        )
       })
       .catch(function (error) {
         console.log(error);
@@ -160,13 +166,15 @@ export class Mangadex implements AbstractMangaFactory {
       )
       .then(function (response) {
         const hash = response.data.chapter.hash;
-        for (let i = 0; i < response.data.chapter.data.length; i++) {
-          chapter_data.push({
-            _id: i,
-            src_origin: `https://uploads.mangadex.org/data/${hash}/${response.data.chapter.data[i]}`,
-            alt: title + ' id: ' + i,
-          });
-        }
+        response.data.chapter.data.map(
+          (e:any, i: number) => {
+            chapter_data.push({
+               _id: i,
+              src_origin: `https://uploads.mangadex.org/data/${hash}/${response.data.chapter.data[i]}`,
+              alt: title + ' id: ' + i,            
+            })
+          }
+        )
       })
       .catch(function (error) {
         console.log(error);
