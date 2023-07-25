@@ -7,4 +7,5 @@ var MangaType;
     MangaType["TOONILY"] = "toonily";
     MangaType["ASURASCANS"] = "asurascans";
     MangaType["BLOGTRUYEN"] = "blogtruyen";
+    MangaType["MANGADEX"] = "mangadex";
 })(MangaType = exports.MangaType || (exports.MangaType = {}));

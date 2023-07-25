@@ -6,6 +6,7 @@ const nettruyen_1 = require("../lib/nettruyen");
 const asurascans_1 = require("./asurascans");
 const blogtruyen_1 = require("./blogtruyen");
 const toonily_1 = require("./toonily");
+const mangadex_1 = require("./mangadex");
 class Manga {
     constructor() { }
     build(type, params) {
@@ -29,6 +30,11 @@ class Manga {
                 return new blogtruyen_1.Blogtruyen(params !== undefined && params.baseUrl !== undefined
                     ? params.baseUrl
                     : 'https://blogtruyen.vn');
+            }
+            case manga_1.MangaType.MANGADEX: {
+                return new mangadex_1.Mangadex(params !== undefined && params.baseUrl !== undefined
+                    ? params.baseUrl
+                    : 'https://mangadex.org');
             }
             default: {
                 return new nettruyen_1.Nettruyen('https://www.nettruyenmax.com');

@@ -96,13 +96,6 @@ class Blogtruyen {
             url = url !== undefined ? url : '';
             path = path !== undefined ? path : '';
             const _page = yield (yield this.browser).newPage();
-            yield _page.setRequestInterception(true);
-            _page.on('request', (req) => {
-                if (req.resourceType() !== 'document')
-                    req.abort();
-                else
-                    req.continue();
-            });
             yield _page.goto(url_chapter);
             const content = yield _page.$('#readonline > section');
             const title = (0, validate_1.not_null)(yield _page.$eval('#readonline > header > h1', (el) => el.textContent));
@@ -203,8 +196,6 @@ class Blogtruyen {
                     last_update: (0, validate_1.not_null)(last_update),
                 };
             })));
-            const rate = 'N|A';
-            const rate_number = 'N|A';
             const follows = (0, validate_1.not_null)(yield content.$eval('#LikeCount', (el) => el.textContent));
             return {
                 title: (0, validate_1.not_null)(title).trim(),
@@ -214,8 +205,6 @@ class Blogtruyen {
                 status: (0, validate_1.not_null)(status).trim(),
                 genres,
                 views: (0, validate_1.not_null)(views),
-                rate,
-                rate_number,
                 follows,
                 chapters,
             };
@@ -231,7 +220,7 @@ class Blogtruyen {
                 else
                     req.continue();
             });
-            yield _page.goto(`${this.baseUrl}${page > 1 ? `/?page=${page}` : ``}`);
+            yield _page.goto(`${this.baseUrl}${page > 1 ? `/page-${page}` : ``}`);
             const element = yield _page.$$('#wrapper > section.main-content > div > div:nth-child(1) > section.list-mainpage > div:nth-child(1) > div > div');
             const totalPage = parseInt((0, validate_1.not_null)(yield _page.$eval('#wrapper > section.main-content > div > div:nth-child(1) > section.list-mainpage > div:nth-child(2) > div > nav > ul > li:last-child > a', (el) => el.getAttribute('href'))).split('/page-')[1]);
             return {
@@ -251,7 +240,7 @@ class Blogtruyen {
                     return {
                         _id: i,
                         title: (0, validate_1.not_null)(link.title),
-                        href: 'https://blogtruyen.vn' + (0, validate_1.not_null)(link.href),
+                        href: this.baseUrl + (0, validate_1.not_null)(link.href),
                         image_thumbnail: image_thumbnail.startsWith('//')
                             ? `https:${image_thumbnail}`
                             : image_thumbnail,
