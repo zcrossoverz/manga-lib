@@ -60,10 +60,10 @@ export class Mangadex implements AbstractMangaFactory {
       });
     return {
       totalData,
-      canNext: true,
-      canPrev: false,
-      totalPage: 2,
-      currentPage: 2,
+      canNext: offset <= 9967 ? true: false,
+      canPrev: offset === 0 ? false : true,
+      totalPage: 9983,
+      currentPage: offset,
       data,
     };
   }
@@ -217,10 +217,10 @@ export class Mangadex implements AbstractMangaFactory {
       });
     return {
       totalData,
-      canNext: true,
-      canPrev: false,
-      totalPage: 2,
-      currentPage: 2,
+      canNext: offset <= 9967 ? true: false,
+      canPrev: offset >= 16 ? true: false,
+      totalPage: 9983,
+      currentPage: offset,
       data,
     };
   }
