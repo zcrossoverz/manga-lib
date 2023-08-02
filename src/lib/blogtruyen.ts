@@ -30,6 +30,7 @@ export class Blogtruyen implements AbstractMangaFactory {
 
   async search(keyword: string, page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -90,6 +91,7 @@ export class Blogtruyen implements AbstractMangaFactory {
   ): Promise<responseListManga> {
     const path = genre.path;
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -148,6 +150,7 @@ export class Blogtruyen implements AbstractMangaFactory {
     path = path !== undefined ? path : '';
 
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.goto(url_chapter);
     const content = await _page.$('#readonline > section');
     const title = not_null(
@@ -211,6 +214,7 @@ export class Blogtruyen implements AbstractMangaFactory {
 
   async getDetailManga(url: string): Promise<responseDetailManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -304,12 +308,13 @@ export class Blogtruyen implements AbstractMangaFactory {
 
   async getListLatestUpdate(page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
       else req.continue();
     });
-    await _page.goto(`${this.baseUrl}${page > 1 ? `/page-${page}` :``}`);
+    await _page.goto(`${this.baseUrl}${page > 1 ? `/page-${page}` : ``}`);
     const element = await _page.$$(
       '#wrapper > section.main-content > div > div:nth-child(1) > section.list-mainpage > div:nth-child(1) > div > div'
     );

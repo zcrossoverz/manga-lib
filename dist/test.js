@@ -12,5 +12,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const src_1 = require("./src");
 const t = new src_1.Manga().build(src_1.MangaType.ASURASCANS);
 void (() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(yield t.getListByGenre({ path: '/genres/action', name: 'action' }));
+    console.log(yield t.getListLatestUpdate());
 }))();

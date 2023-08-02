@@ -26,6 +26,7 @@ class Nettruyen {
     search(keyword, page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -76,6 +77,7 @@ class Nettruyen {
     getListByGenre(genre, page, status, sort) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             let path = genre.path;
             if (sort !== undefined) {
                 path += `?sort=${sort}${status !== undefined ? `&status=${status}` : '&status=-1'}${page !== undefined ? `&page=${page}` : ''}`;
@@ -129,6 +131,7 @@ class Nettruyen {
             url = url !== undefined ? url : '';
             path = path !== undefined ? path : '';
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -200,6 +203,7 @@ class Nettruyen {
     getDetailManga(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -271,6 +275,7 @@ class Nettruyen {
     getListLatestUpdate(page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')

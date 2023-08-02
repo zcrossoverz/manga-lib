@@ -43,7 +43,5 @@ import { Manga, MangaType } from './src';
 const t = new Manga().build(MangaType.ASURASCANS);
 
 void (async () => {
-  console.log(
-    await t.getListByGenre({ path: '/genres/action', name: 'action' })
-  );
+  console.log(await t.getListLatestUpdate());
 })();

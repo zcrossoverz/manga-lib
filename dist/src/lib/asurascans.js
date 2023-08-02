@@ -28,6 +28,7 @@ class AsuraScans {
     search(keyword, page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -68,6 +69,7 @@ class AsuraScans {
     getListByGenre(genre, page, status, sort) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             const url = `${this.baseUrl}${genre.path}${page !== undefined && page > 1 ? `/page/${page}` : ``}`;
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
@@ -109,6 +111,7 @@ class AsuraScans {
     getDataChapter(url_chapter, url, path, prev_chapter, next_chapter) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -151,6 +154,7 @@ class AsuraScans {
     getDetailManga(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')
@@ -216,6 +220,7 @@ class AsuraScans {
     getListLatestUpdate(page = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             const _page = yield (yield this.browser).newPage();
+            _page.setDefaultNavigationTimeout(0);
             yield _page.setRequestInterception(true);
             _page.on('request', (req) => {
                 if (req.resourceType() !== 'document')

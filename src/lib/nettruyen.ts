@@ -31,6 +31,7 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async search(keyword: string, page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -120,6 +121,7 @@ export class Nettruyen implements AbstractMangaFactory {
     sort?: NETTRUYEN_SORT_FILTER
   ): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     let path = genre.path;
     if (sort !== undefined) {
       path += `?sort=${sort}${
@@ -208,6 +210,7 @@ export class Nettruyen implements AbstractMangaFactory {
     path = path !== undefined ? path : '';
 
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -301,6 +304,7 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async getDetailManga(url: string): Promise<responseDetailManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
@@ -419,6 +423,7 @@ export class Nettruyen implements AbstractMangaFactory {
 
   async getListLatestUpdate(page = 1): Promise<responseListManga> {
     const _page = await (await this.browser).newPage();
+    _page.setDefaultNavigationTimeout(0);
     await _page.setRequestInterception(true);
     _page.on('request', (req) => {
       if (req.resourceType() !== 'document') req.abort();
