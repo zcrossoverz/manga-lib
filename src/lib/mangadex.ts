@@ -8,6 +8,13 @@ import {
   responseDetailManga,
   responseListManga,
 } from '../types/type';
+import {
+  ResponseSearchMangaDex,
+  ResponseChapterData,
+  ResponseDataChapterInfoData,
+  ResponseDetailsChapters,
+  ResponseDetailsGenres,
+} from '../types/mangadex';
 export class Mangadex implements AbstractMangaFactory {
   baseUrl: string;
   all_genres: genre[];
@@ -16,7 +23,7 @@ export class Mangadex implements AbstractMangaFactory {
     this.baseUrl = baseUrl;
     this.all_genres = [] as genre[];
   }
-  async getListByGenre(
+  getListByGenre(
     genre: genre,
     page?: number | undefined,
     status?: any,
@@ -43,10 +50,10 @@ export class Mangadex implements AbstractMangaFactory {
       .get(
         `https://api.mangadex.org/manga?limit=16&offset=${offset}&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
       )
-      .then(function (response) {
+      .then(function (response: ResponseSearchMangaDex) {
         const listLatestUpdate = response.data.data;
         totalData = response.data.total;
-        data = listLatestUpdate.map((e: any, i: any) => {
+        data = listLatestUpdate.map((e, i) => {
           return {
             _id: offset + i,
             title: e.attributes.title.en,
@@ -60,7 +67,7 @@ export class Mangadex implements AbstractMangaFactory {
       });
     return {
       totalData,
-      canNext: offset <= 9967 ? true: false,
+      canNext: offset <= 9967 ? true : false,
       canPrev: offset === 0 ? false : true,
       totalPage: 9983,
       currentPage: offset,
@@ -79,11 +86,12 @@ export class Mangadex implements AbstractMangaFactory {
         `https://api.mangadex.org/manga/${sourceId}?includes[]=artist&includes[]=author&includes[]=cover_art`
       )
       .then(function (response) {
-        const infoData = response.data.data;
-        author = infoData.relationships[0].attributes.name;
+        const responseAxios = response.data as ResponseDetailsGenres;
+        const infoData = responseAxios.data;
+        author = infoData.relationships[0].attributes?.name ?? '';
         title = infoData.attributes.title.en;
         status = infoData.attributes.status;
-        infoData.attributes.tags.map((e: any) => {
+        infoData.attributes.tags.map((e) => {
           genres.push({
             url: `https://mangadex.org/tag/` + e.id,
             name: e.attributes.name.en,
@@ -98,11 +106,12 @@ export class Mangadex implements AbstractMangaFactory {
     const chapters: chapter[] = [] as chapter[];
     await axios
       .get(
-        `https://api.mangadex.org/manga/${sourceId}/feed?translatedLanguage[]=en&includes[]=scanlation_group&&includes[]=user&order[volume]=desc&order[chapter]=desc&offset=0&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
+        `https://api.mangadex.org/manga/${sourceId}/feed?translatedLanguage[]=es-la&includes[]=scanlation_group&&includes[]=user&order[volume]=desc&order[chapter]=desc&offset=0&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`
       )
       .then(function (response) {
-        const chapterData = response.data.data;
-        chapterData.map((e: any) => {
+        const responseAxio = response.data as ResponseDetailsChapters;
+        const chapterData = responseAxio.data;
+        chapterData.map((e) => {
           chapters.push({
             path: '/' + e.id,
             url: `https://mangadex.org/chapter/${e.id}`,
@@ -140,14 +149,16 @@ export class Mangadex implements AbstractMangaFactory {
         `https://api.mangadex.org/chapter/${sourceId}?includes[]=scanlation_group&includes[]=manga&includes[]=user`
       )
       .then(function (response) {
-        const infoData = response.data.data;
+        const responseAxios = response.data as ResponseDataChapterInfoData;
+        const infoData = responseAxios.data;
         let mangaId = 0;
         for (let i = 0; i < infoData.relationships.length; i++)
           if (infoData.relationships[i].type == 'manga') {
             mangaId = i;
             break;
           }
-        title = `${infoData.relationships[mangaId].attributes.title.en} chap ${infoData.attributes.chapter} [${infoData.attributes.title}]`;
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        title = `${infoData.relationships[mangaId].attributes.title?.en} chap ${infoData.attributes.chapter} [${infoData.attributes.title}]`;
       })
       .catch(function (error) {
         console.log(error);
@@ -158,12 +169,13 @@ export class Mangadex implements AbstractMangaFactory {
         `https://api.mangadex.org/at-home/server/${sourceId}?forcePort443=false`
       )
       .then(function (response) {
-        const hash = response.data.chapter.hash;
-        response.data.chapter.data.map((e: any, i: number) => {
+        const responseAxios = response.data as ResponseChapterData;
+        const hash = responseAxios.chapter.hash;
+        responseAxios.chapter.data.map((e, i) => {
           chapter_data.push({
             _id: i,
-            src_origin: `https://uploads.mangadex.org/data/${hash}/${response.data.chapter.data[i]}`,
-            alt: title + ' id: ' + i,
+            src_origin: `https://uploads.mangadex.org/data/${hash}/${responseAxios.chapter.data[i]}`,
+            alt: `${title} id: ${i}`,
           });
         });
       })
@@ -199,11 +211,11 @@ export class Mangadex implements AbstractMangaFactory {
       .get(
         `https://api.mangadex.org/manga?limit=10&offset=${offset}&includes[]=cover_art&includes[]=artist&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&title=${keyword}&order[relevance]=desc`
       )
-      .then(function (response) {
+      .then(function (response: ResponseSearchMangaDex) {
         totalData = response.data.total;
         const listLatestUpdate = response.data.data;
         totalData = response.data.total;
-        data = listLatestUpdate.map((e: any, i: any) => {
+        data = listLatestUpdate.map((e, i) => {
           return {
             _id: i,
             title: e.attributes.title.en,
@@ -217,8 +229,8 @@ export class Mangadex implements AbstractMangaFactory {
       });
     return {
       totalData,
-      canNext: offset <= 9967 ? true: false,
-      canPrev: offset >= 16 ? true: false,
+      canNext: offset <= 9967 ? true : false,
+      canPrev: offset >= 16 ? true : false,
       totalPage: 9983,
       currentPage: offset,
       data,
